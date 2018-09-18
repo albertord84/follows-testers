@@ -2,6 +2,8 @@
 .rsync_exclude
 .DS_Store
 .env
+.babelrc
+.editorconfig
 
 application/cache/*
 !application/cache/index.html

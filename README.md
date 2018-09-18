@@ -2,7 +2,7 @@
 
 Testers do sistema follows da DUMBU
 
-# directorios excluidos
+# Directorios excluidos
 
 ## var
 
@@ -29,3 +29,30 @@ este directorio contiene algunos archivos sensibles con nombres de cuentas y con
 ## log
 
 contiene los diferentes logs de las cosas que iran ocurriendo en el sistema. crearlo despues del primer pull y ponerle permisos **777**.
+
+# Directorios a proteger
+
++ application
++ src
++ public
++ vendor
+
+¿como hacerlo? poniendo en la raiz de cada uno un punto **htaccess** con lo siguiente:
+
+```html
+
+<IfModule authz_core_module>
+	Require all denied
+</IfModule>
+<IfModule !authz_core_module>
+	Deny from all
+</IfModule>
+
+```
+estos directorios son protegidos porque no puede verse desde la web publica el contenido de los mismos.
+
+# Directorio del cliente web (frontend)
+
+es el directorio **client**. este contiene el resultado de la compilacion del codigo javascript, html y css que esta en el directorio **src**. ademas, este codigo esta enlazado con el contenido de **public**. o sea, cuando nodejs compila lo que hay en **src**, toma tambien lo que hay en **public**, y emsambla todo para luego ponerlo dentro de **client**. por tanto, este direcorio **client** es el que siempre debe estar de cara a la web, aparte del **index.php** que es el punto de entrada del CodeIgniter que es nuestro backend.
+
+asi que esto pone de relieve que solo hacen falta de cara a la web el directorio **client** y el archivo **index.php**. todo lo demas hay que protegerlo de los ojos extraños usando todas las medidas y restricciones que se pueda.

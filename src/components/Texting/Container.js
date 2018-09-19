@@ -47,6 +47,13 @@ class Container extends React.Component {
           </div>
           <Footer />
         </div>
+        <div className="tools fixed-top d-flex align-items-center">
+          <div className="row m-auto btn-toolbar text-center" role="toolbar">
+            <a className="col-12 border p-1 small rounded mb-1" href="#/texting/users">U</a>
+            <a className="col-12 border p-1 small rounded mb-1" href="#/texting/stats">S</a>
+            <a className="col-12 border p-1 small rounded" href="#/texting/messages">M</a>
+          </div>
+        </div>
       </div>
     )
   }

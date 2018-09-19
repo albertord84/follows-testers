@@ -8,11 +8,13 @@ import store, { getRefProfileFromSearchList,
 
 import { of, Subject } from "rxjs";
 import { fromPromise } from 'rxjs/observable/fromPromise';
+import { fromEvent } from 'rxjs/observable/fromEvent';
 import {
   filter, map, switchMap, delay, tap, catchError,
   distinctUntilChanged, debounceTime } from "rxjs/operators";
 import { setRefProfilesSearchList, setDirectReferenceProfile,
   setDirectMessageText } from "../store/texting";
+import { atTexting } from "../history";
 
 export const refProfileInput$ = new Subject();
 
@@ -93,3 +95,4 @@ onSendDirectData$.pipe(
 ).subscribe(() => {
   alert('Your message was successfully registered.');
 });
+

@@ -101,3 +101,32 @@ img.ref-prof-pic {
   width: 64px;
   height: 64px;
 }
+
+.tools {
+  width: 50px;
+  height: 100%;
+}
+
+.tools .btn-toolbar {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.9s linear;
+}
+
+.tools:hover .btn-toolbar a {
+  text-decoration: none;
+}
+
+.tools:hover .btn-toolbar {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tools .btn-toolbar {
+  max-width: 40px;
+}
+
+.tools .btn-toolbar a:hover {
+  background-color: darkgray;
+  color: white;
+}

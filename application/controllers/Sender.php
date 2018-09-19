@@ -16,7 +16,7 @@ class Sender extends MY_Controller {
    */
   public function start($msgFile) {
     set_time_limit(0);
-
+    
     try {
       if ($this->is_web_request()) {
         printf("%s Not allowed to run from the browser. Terminating right now.\n",
@@ -31,7 +31,7 @@ class Sender extends MY_Controller {
       }
   
       $this->create_pid_file();
-      $data = $this->load_message($msgFile);
+      $data = $this->load_message(DIRECTS_POOL_DIR . "/$msgFile");
   
       if ($data->finished) {
         printf("%s This message is no longer being processed. Terminating...\n",
@@ -51,83 +51,63 @@ class Sender extends MY_Controller {
       $data->lastProf = $recipData->lastProf;
       $data->rankToken = $recipData->rankToken;
       $this->set_stats($msgFile, $data);
-  
+
       $this->remove_pid_file();
     }
     catch(\Exception $mainEx) {
-      echo $mainEx->getMessage();
+      $this->remove_pid_file();
+      echo $mainEx->getMessage() . PHP_EOL;
     }
   }
 
   private function login_instagram($data) {
     $six_hours = 3590 * 6; // a bit less than 6h (3600 * 6)
     $instagram = null;
-    try {
-      $instagram = new \InstagramAPI\Instagram();
-      $instagram->login($data->userName, $data->password, $six_hours);
-      return $instagram;
-    }
-    catch(\Exception $loginEx) {
-      printf("%s Could not log into Instagram: \"%s\"\n",
-        $this->time_str(), $loginEx->getMessage());
-      exit(1);
-    }
+    $instagram = new \InstagramAPI\Instagram(false, true);
+    $instagram->login($data->userName, $data->password, $six_hours);
+    return $instagram;
   }
 
   private function get_next_recipient($instagram, $data) {
-    try {
-      $rankToken = $data->rankToken === null ?
-        \InstagramAPI\Signatures::generateUUID() : $data->rankToken;
-      $nextProf = null;
-      $followersResponse = $instagram->people
-        ->getFollowers($data->profileId, $rankToken, null,
-                       $data->maxId === null ? null : $data->maxId);
-      $list = $followersResponse->getUsers();
-      $maxId = $followersResponse->getNextMaxId();
-      if ($data->lastProf === '' || $data->lastProf === null) {
-        $followers = $followersResponse->getUsers();
-        if (count($followers) === 0) {
-          throw new \Exception('Selected reference profile has no followers');
-        }
-        $firstProf = current($followers);
-        $nextProf = $firstProf->getPk();
-        return (object) [
-          'lastProf' => $nextProf,
-          'maxId' => $maxId,
-          'rankToken' => $rankToken,
-        ];
+    $rankToken = $data->rankToken === null ?
+      \InstagramAPI\Signatures::generateUUID() : $data->rankToken;
+    $nextProf = null;
+    $followersResponse = $instagram->people
+      ->getFollowers($data->profileId, $rankToken, null,
+                      $data->maxId === null ? null : $data->maxId);
+    $list = $followersResponse->getUsers();
+    $maxId = $followersResponse->getNextMaxId();
+    if ($data->lastProf === '' || $data->lastProf === null) {
+      $followers = $followersResponse->getUsers();
+      if (count($followers) === 0) {
+        throw new \Exception('Selected reference profile has no followers');
       }
-      $nextProf = next_prof_from($list, $data->profileId);
-      if (!$nextProf) {
-        $maxId = $followersResponse->getNextMaxId();
-        $followersResponse = $instagram->people->getFollowers($data->profileId,
-          $rankToken, null, $maxId);
-        $firstProf = current($followersResponse->getUsers());
-        $nextProf = $firstProf->getPk();
-      }
+      $firstProf = current($followers);
+      $nextProf = $firstProf->getPk();
       return (object) [
         'lastProf' => $nextProf,
         'maxId' => $maxId,
         'rankToken' => $rankToken,
       ];
     }
-    catch(\Exception $nextProfEx) {
-      printf("%s Could not get the next recipient: \"%s\"\n",
-        $this->time_str(), $nextProfEx->getMessage());
-      exit(1);
+    $nextProf = $this->next_prof_from($list, $data->profileId);
+    if (!$nextProf) {
+      $maxId = $followersResponse->getNextMaxId();
+      $followersResponse = $instagram->people->getFollowers($data->profileId,
+        $rankToken, null, $maxId);
+      $firstProf = current($followersResponse->getUsers());
+      $nextProf = $firstProf->getPk();
     }
+    return (object) [
+      'lastProf' => $nextProf,
+      'maxId' => $maxId,
+      'rankToken' => $rankToken,
+    ];
   }
 
   private function send($instagram, $prof, $msg) {
-    try {
-      $instagram->direct->sendText([ 'users' => [ $prof ] ], $msg);
-      return true;
-    }
-    catch(\Exception $sendEx) {
-      printf("%s Could not send the message: \"%s\"\n",
-        $this->time_str(), $sendEx->getMessage());
-      exit(1);
-    }
+    $instagram->direct->sendText([ 'users' => [ $prof ] ], $msg);
+    return true;
   }
 
   private function next_prof_from($usersList, $lastProf) {
@@ -145,20 +125,13 @@ class Sender extends MY_Controller {
   }
 
   private function set_stats($fileName, $data) {
-    try {
-      $fileObj = json_decode(read_file($fileName));
-      $fileObj->sent = (int)$fileObj->sent + 1;
-      $fileObj->lastProf = $data->lastProf;
-      $fileObj->maxId = $data->maxId;
-      $fileObj->rankToken = $data->rankToken;
-      $json = json_encode($fileObj, JSON_PRETTY_PRINT);
-      write_file($fileName, $json);
-    }
-    catch(\Exception $statEx) {
-      printf("%s Could not update stats: \"%s\"\n",
-        $this->time_str(), $statEx->getMessage());
-      exit(1);
-    }
+    $fileObj = json_decode(read_file(DIRECTS_POOL_DIR . "/$fileName"));
+    $fileObj->sent = (int)$fileObj->sent + 1;
+    $fileObj->lastProf = $data->lastProf;
+    $fileObj->maxId = $data->maxId;
+    $fileObj->rankToken = $data->rankToken;
+    $json = json_encode($fileObj, JSON_PRETTY_PRINT);
+    write_file(DIRECTS_POOL_DIR . "/$fileName", $json);
   }
 
   private function is_web_request() {
@@ -180,46 +153,22 @@ class Sender extends MY_Controller {
   }
 
   private function create_pid_file() {
-    try {
-      file_put_contents(DIRECTS_PID_FILE, '');
-    }
-    catch(\Exception $pidEx) {
-      printf("%s Could not create pid file: \"%s\"\n",
-        $this->time_str(), $pidEx->getMessage());
-      exit(1);
-    }
+    file_put_contents(DIRECTS_PID_FILE, '');
   }
 
   private function remove_pid_file() {
     $pid = DIRECTS_PID_FILE;
     if (file_exists($pid)) {
-      try {
-        unlink($pid);
-      }
-      catch(\Exception $pidEx) {
-        printf("%s Could not delete pid file: \"%s\"\n",
-          $this->time_str(), $pidEx->getMessage());
-        exit(1);
-      }
+      unlink($pid);
     }
   }
 
   private function load_message($msg_filename) {
-    try {
-      if (!file_exists($msg_filename)) {
-        throw new \Exception('Message file is not present');
-      }
-      $data = read_file($msg_filename);
-      if ($data === false) {
-        throw new \Exception('Unable to load message file');
-      }
-      return json_decode($data);
+    $data = read_file($msg_filename);
+    if ($data === false) {
+      throw new \Exception('Unable to load message file');
     }
-    catch(\Exception $loadEx) {
-      printf("%s Could not load message file: \"%s\"\n",
-        $this->time_str(), $loadEx->getMessage());
-      exit(1);
-    }
+    return json_decode($data);
   }
 
 }

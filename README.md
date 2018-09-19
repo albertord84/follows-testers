@@ -39,7 +39,7 @@ contiene los diferentes logs de las cosas que iran ocurriendo en el sistema. cre
 
 ¿como hacerlo? poniendo en la raiz de cada uno un punto **htaccess** con lo siguiente:
 
-```html
+```
 
 <IfModule authz_core_module>
 	Require all denied

@@ -126,7 +126,26 @@ img.ref-prof-pic {
   max-width: 40px;
 }
 
+.tools .btn-toolbar a {
+  border-radius: 3px;
+}
+
 .tools .btn-toolbar a:hover {
   background-color: darkgray;
   color: white;
+}
+
+.modal.delivery-log {
+  display: block;
+}
+
+.modal.delivery-log .modal-content {
+  border: 5px solid rgba(0,0,0,.1)!important;
+  max-width: 600px;
+}
+
+.modal.delivery-log .modal-content .modal-body {
+  overflow: scroll;
+  overflow-x: hidden;
+  max-height: 250px;
 }

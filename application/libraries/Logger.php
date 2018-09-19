@@ -29,4 +29,12 @@ class Logger {
     return sprintf("%s %s %s", $month, $day, $hour_min_secs);
   }
 
+  public function delivery_log($lines = 20) {
+    if (file_exists(SENDER_LOG)) {
+      $lines = shell_exec("tail -n $lines " . SENDER_LOG);
+      return preg_split("/\n|\r/", $lines, -1, PREG_SPLIT_NO_EMPTY);
+    }
+    return [];
+  }
+
 }

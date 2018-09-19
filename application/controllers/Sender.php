@@ -181,4 +181,17 @@ class Sender extends MY_Controller {
     return json_decode($data);
   }
 
+  public function delivery() {
+    try {
+      $this->load->library('logger');
+      $log = $this->logger->delivery_log();
+      return $this->success('ok', [
+        'log' => $log
+      ]);
+    }
+    catch(\Exception $deliveryEx) {
+      return $this->error('Delivery log error: ' . $deliveryEx->getMessage());
+    }
+  }
+
 }

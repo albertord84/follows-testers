@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { trim } from "lodash-es";
+import { trim, isEqual } from "lodash-es";
 
 import * as NProgress from "nprogress/nprogress";
 
@@ -8,13 +8,14 @@ import store, { getRefProfileFromSearchList,
 
 import { of, Subject } from "rxjs";
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { fromEvent } from 'rxjs/observable/fromEvent';
 import {
   filter, map, switchMap, delay, tap, catchError,
   distinctUntilChanged, debounceTime } from "rxjs/operators";
 import { setRefProfilesSearchList, setDirectReferenceProfile,
-  setDirectMessageText } from "../store/texting";
-import { atTexting } from "../history";
+  setDirectMessageText, 
+  loadDeliveryStats,
+  setDeliveryLog} from "../store/texting";
+import history, { atTexting } from "../history";
 
 export const refProfileInput$ = new Subject();
 
@@ -96,3 +97,41 @@ onSendDirectData$.pipe(
   alert('Your message was successfully registered.');
 });
 
+const onToolBarButtonClick$ = new Subject().pipe(
+  filter(() => atTexting())
+);
+
+export const onCloseDeliveryStatsDialog$ = new Subject();
+
+onCloseDeliveryStatsDialog$.subscribe(() => store.dispatch(loadDeliveryStats()));
+
+history.listen(location => {
+  onToolBarButtonClick$.next(location.hash);
+});
+
+onToolBarButtonClick$.pipe(
+  filter(hash => hash === '#log'),
+  tap(() => NProgress.start()),
+  delay(500),
+  tap(() => NProgress.set(0.5)),
+  switchMap(() => {
+    const logUrl = `${global.baseUrl}/sender/delivery`;
+    const promise = Axios.post(logUrl)
+    .then(response => {
+      return response.data.log;
+    })
+    return fromPromise(promise).pipe(
+      catchError(error => {
+        console.error(error);
+        return of(false);
+      })
+    );
+  }),
+  delay(1000),
+  tap(() => NProgress.done()),
+  filter(result => result !== false),
+  tap(result => store.dispatch(setDeliveryLog(result))),
+  delay(500),
+).subscribe(() => {
+  store.dispatch(loadDeliveryStats(true));
+});

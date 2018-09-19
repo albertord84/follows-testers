@@ -1,6 +1,6 @@
 import React from "react";
 
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { trim } from "lodash-es";
 
@@ -11,6 +11,7 @@ import { redirectNotLogged } from "../../services/User";
 
 import MessageEditor from "./MessageEditor";
 import ReferenceProfileData from "./ReferenceProfileData";
+import DeliveryLog from "./DeliveryLog";
 import { onSendDirectData$ } from "../../services/Texting";
 
 class Container extends React.Component {
@@ -48,12 +49,23 @@ class Container extends React.Component {
           <Footer />
         </div>
         <div className="tools fixed-top d-flex align-items-center">
-          <div className="row m-auto btn-toolbar text-center" role="toolbar">
-            <a className="col-12 border p-1 small rounded mb-1" href="#/texting/users">U</a>
-            <a className="col-12 border p-1 small rounded mb-1" href="#/texting/stats">S</a>
-            <a className="col-12 border p-1 small rounded" href="#/texting/messages">M</a>
+          <div className="btn-group-vertical btn-toolbar">
+            <Link to={{hash:"#log"}} className="btn btn-default btn-xs p-1 m-1"
+                  title="Delivery log" replace>
+              <small><i className="fa fa-bar-chart"></i></small>
+            </Link>
+            <Link to={{hash:"#messages"}} className="btn btn-default btn-xs p-1 m-1"
+                  title="Browse composed messages" replace>
+              <small><i className="fa fa-envelope"></i></small>
+            </Link>
+            <Link to={{hash:"#user"}} className="btn btn-default btn-xs p-1 m-1"
+                  title="User messages" replace>
+              <small><i className="fa fa-user"></i></small>
+            </Link>
           </div>
         </div>
+        <DeliveryLog load={props.loadDeliveryStats}
+                     log={props.deliveryLog} />
       </div>
     )
   }
@@ -64,7 +76,9 @@ const mapStateToProps = (state) => {
     logged: state.user.logged,
     refProf: state.texting.profile,
     searchList: state.texting.searchList,
-    message: state.texting.message
+    message: state.texting.message,
+    loadDeliveryStats: state.texting.loadDeliveryStats,
+    deliveryLog: state.texting.deliveryLog
   }
 }
 

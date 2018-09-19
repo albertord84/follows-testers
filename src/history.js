@@ -1,7 +1,7 @@
 import { createHashHistory } from 'history'
 
 const history = createHashHistory({
-  hashType: 'slash'
+  hashType: 'hashbang'
 });
 
 const pathName = () => history.location.pathname;

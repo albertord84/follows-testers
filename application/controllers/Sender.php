@@ -15,6 +15,7 @@ class Sender extends MY_Controller {
    * @param $msgFile Message filename to process.
    */
   public function start($msgFile) {
+    $this->load->library('logger');
     set_time_limit(0);
     
     try {
@@ -53,10 +54,19 @@ class Sender extends MY_Controller {
       $this->set_stats($msgFile, $data);
 
       $this->remove_pid_file();
+      $this->logger->write(
+        SENDER_LOG,
+        sprintf(
+          "INFO: The sender %s successfully texted to %s",
+          $data->profileId,
+          $data->lastProf
+        )
+      );
     }
     catch(\Exception $mainEx) {
       $this->remove_pid_file();
       echo $mainEx->getMessage() . PHP_EOL;
+      $this->logger->write(SENDER_LOG, $mainEx->getMessage());
     }
   }
 

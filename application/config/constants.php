@@ -87,6 +87,7 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 define('USERS_SOURCE', ROOT_DIR . '/etc/users.json');
 define('LOGIN_TEST_DATA', ROOT_DIR . '/etc/login.test.json');
 define('LOGIN_TEST_LOG', ROOT_DIR . '/log/login.test.log');
+define('SENDER_LOG', ROOT_DIR . '/log/sender.log');
 
 define('DIRECTS_PID_FILE', '/tmp/sender.pid');
 define('DIRECTS_POOL_DIR', ROOT_DIR . '/var');

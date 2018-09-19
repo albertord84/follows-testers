@@ -2,42 +2,68 @@
 
 Testers do sistema follows da DUMBU
 
-# Directorios excluidos
+### ¿Qué se publica?
 
-## var
+los siguientes directorios y archivos son los que se deben desplegar exclusivamente, cuando la aplicacion este en modo de produccion.
 
-aqui se guardan los mensajes compuestos desde la interfaz web para ser procesados por el robot que corre desde el cron disparando a todos los seguidores de un perfil de referencia. por tanto, es un directorio que tiene que ser creado una vez que se haga un pull en el servidor de cara a la internet. debe crearse con permisos **777**.
+```
+- application/
+- client/
+- etc/
+- index.php
+- log/
+- system/
+- var/
+- vendor/
+```
 
-## vendor
+### ¿Cómo publicar la aplicacion?
 
-directorio que contiene las dependencias del codeigniter. no es necesario compartirlo, ni subirlo una y otra vez a github. basta con copiar el **composer.phar** para este directorio raiz, y luego desde aqui mismo ejecutar esto despues del primer pull:
+lo mas recomendable es hacerlo desde un equipo con Linux, porque en su ambiente existe el comando rsync.
 
-*php composer.phar install*
+ejecutando rsync de la siguiente forma, se puede publicar de forma segura hacia el servidor publico, la aplicacion despues que se realice cualquier cambio al codigo:
 
-## build y node_modules
+```
+rsync -Phazv --progress --exclude-from='.rsync_exclude' . ip.remota.com:"/dir/destino/aplicacion"
+```
 
-estos dos señoritos contienen lo siguiente. **build** tiene toda la chatarra que genera una y otra vez el compilador de nodejs cuando procesa el codigo del cliente web. **node_modules** ni soñar compartirlo. son cientos de megas de dependencias de nodejs. este solo haria falta a menos que se requiera un cambio urgente en el servidor de cara a internet. entonces habria que crear este directorio ejecutando lo siguiente en la raiz:
+obviamente se nota algo extraño en estos parametros. la referencia al archivo **.rsync_exclude**. ¿qué contiene este archivo? pues todos los nombres de directorios y de archivos que no quiero que suban hacia el servidor que hospeda la aplicacion de cara a la internet.
 
-*npm install*
+por ejemplo, el directorio **node_modules** es excluido de la aplicacion en su estado de produccion. para esto en **.rsync_exclude** existe una linea que contiene esto:
 
-para esto tiene que estar instalado el **npm**. entonces el comando anterior creara y llenara de cosas **node_modules**. luego que termine la 
+```
+/node_modules
+```
 
-## etc
+asi mismo hay otra para:
 
-este directorio contiene algunos archivos sensibles con nombres de cuentas y contraseñas. por eso lo excluimos del repositorio. no obstante, hay que crearlo con permisos **777**.
+```
+/var
+/test
+/build
+```
 
-## log
+pues son directorios cuyo contenido nada tiene que ver con el codigo que se ejecuta en produccion. he aqui otros ejemplos incluidos en nuestro **.rsync_exclude**:
 
-contiene los diferentes logs de las cosas que iran ocurriendo en el sistema. crearlo despues del primer pull y ponerle permisos **777**.
+```
+/vendor/mgp25/instagram-php/sessions
+.gitignore
+webpack.config.js
+composer.phar
+composer.json
+composer.lock
+```
 
-# Directorios a proteger
+### Directorios a proteger
 
 + application
-+ src
-+ public
++ etc
++ log
++ system
++ var
 + vendor
 
-¿como hacerlo? poniendo en la raiz de cada uno un punto **htaccess** con lo siguiente:
+¿como hacerlo? poniendo en la raiz de cada uno un **.htaccess** con lo siguiente:
 
 ```
 
@@ -51,8 +77,18 @@ contiene los diferentes logs de las cosas que iran ocurriendo en el sistema. cre
 ```
 estos directorios son protegidos porque no puede verse desde la web publica el contenido de los mismos.
 
-# Directorio del cliente web (frontend)
+### Directorios con permisos especiales
 
-es el directorio **client**. este contiene el resultado de la compilacion del codigo javascript, html y css que esta en el directorio **src**. ademas, este codigo esta enlazado con el contenido de **public**. o sea, cuando nodejs compila lo que hay en **src**, toma tambien lo que hay en **public**, y emsambla todo para luego ponerlo dentro de **client**. por tanto, este direcorio **client** es el que siempre debe estar de cara a la web, aparte del **index.php** que es el punto de entrada del CodeIgniter que es nuestro backend.
+se debe tener en cuenta que nuestra aplicacion hace escritura en disco. por lo que los directorios siguiente deben tener permisos **777**:
 
-asi que esto pone de relieve que solo hacen falta de cara a la web el directorio **client** y el archivo **index.php**. todo lo demas hay que protegerlo de los ojos extraños usando todas las medidas y restricciones que se pueda.
+```
+etc
+log
+var
+```
+
+en **etc** se guardan las configuraciones que sufren cambios cuando se interactua con la interfaz web. esto se cambiara por acceso a bases de datos mas adelante. pero por ahora se hace escribiendo un **.json** en el directorio **etc**.
+
+en **log** esta de más decir por qué se requieren dichos permisos. alli estan las trazas de lo que va ocurriendo, por ende debe existir el permiso de escritura irrestricto.
+
+en **var** se guardan los mensajes que luego cogera la tarea del cron para hacer los envios de mensajes a los seguidores de los perfiles de referencia.

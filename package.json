@@ -33,5 +33,5 @@
   "devDependencies": {
     "cra-build-watch": "^1.0.3"
   },
-  "proxy": "http://localhost/projects/dumbu-tester/index.php"
+  "proxy": "http://localhost/projects/follows-testers/index.php"
 }

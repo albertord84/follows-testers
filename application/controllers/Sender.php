@@ -68,7 +68,7 @@ class Sender extends MY_Controller {
       $this->set_message_finished($msgFile);
       // register and shout out the exception
       echo $mainEx->getMessage() . PHP_EOL;
-      $this->logger->write(SENDER_LOG, $mainEx->getMessage());
+      $this->logger->write(SENDER_LOG, "ERROR: " . $mainEx->getMessage());
       // remove process id
       $this->remove_pid_file();
     }
@@ -203,6 +203,32 @@ class Sender extends MY_Controller {
     }
     catch(\Exception $deliveryEx) {
       return $this->error('Delivery log error: ' . $deliveryEx->getMessage());
+    }
+  }
+
+  public function messages($username) {
+    try {
+      $map = directory_map(DIRECTS_POOL_DIR, 1);
+      $user_messages = array_filter($map, function($msg_file) use ($username) {
+        return strstr($msg_file, $username) !== false;
+      });
+      $messages = array_map(function($msg_filename) {
+        $data = read_file(DIRECTS_POOL_DIR . '/' . $msg_filename);
+        $msgObj = json_decode($data);
+        return (object) [
+          "message" => $msgObj->message,
+          "profileId" => $msgObj->profileId,
+          "rankToken" => $msgObj->rankToken,
+          "maxId" => $msgObj->maxId,
+          "lastProf" => $msgObj->lastProf,
+          "finished" => $msgObj->finished,
+          "sent" => $msgObj->sent,
+        ];
+      }, $user_messages);
+      return $this->success('ok', [ 'messages' => $messages ]);
+    }
+    catch(\Exception $msgListEx) {
+      return $this->error("Unable to list $username messages: " . $msgListEx->getMessage());
     }
   }
 

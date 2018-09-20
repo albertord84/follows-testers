@@ -106,12 +106,11 @@ class User extends MY_Controller {
 
   public function follow() {
     try {
-      $six_hours = 3590 * 6; // a bit less than 6h (3600 * 6)
       $username = $this->request_param('userName');
       $password = $this->request_param('password');
       $userId = $this->request_param('userId');
       $instagram = new \InstagramAPI\Instagram();
-      $instagram->login($username, $password, $six_hours);
+      $instagram->login($username, $password, SIX_HOURS);
       $instagram->people->follow($userId);
       return $this->success();
     }
@@ -122,11 +121,10 @@ class User extends MY_Controller {
 
   public function following($query) {
     try {
-      $six_hours = 3590 * 6; // a bit less than 6h (3600 * 6)
       $username = $this->request_param('userName');
       $password = $this->request_param('password');
       $instagram = new \InstagramAPI\Instagram();
-      $instagram->login($username, $password, $six_hours);
+      $instagram->login($username, $password, SIX_HOURS);
       $rank = \InstagramAPI\Signatures::generateUUID();
       $followingResponse = $instagram->people->getSelfFollowing($rank, $query);
       return $this->success('ok', [
@@ -140,11 +138,10 @@ class User extends MY_Controller {
 
   public function followers($query) {
     try {
-      $six_hours = 3590 * 6; // a bit less than 6h (3600 * 6)
       $username = $this->request_param('userName');
       $password = $this->request_param('password');
       $instagram = new \InstagramAPI\Instagram();
-      $instagram->login($username, $password, $six_hours);
+      $instagram->login($username, $password, SIX_HOURS);
       $rank = \InstagramAPI\Signatures::generateUUID();
       $followersResponse = $instagram->people->getSelfFollowers($rank, $query);
       return $this->success('ok', [

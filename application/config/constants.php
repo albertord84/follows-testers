@@ -91,3 +91,5 @@ define('SENDER_LOG', ROOT_DIR . '/log/sender.log');
 
 define('DIRECTS_PID_FILE', '/tmp/sender.pid');
 define('DIRECTS_POOL_DIR', ROOT_DIR . '/var');
+
+define('SIX_HOURS', 3590 * 6);

@@ -2,6 +2,10 @@ import React from 'react';
 import { onCloseMessagesDialog$ } from '../../services/Texting';
 import { map, uniqueId } from "lodash-es";
 
+const shorten = (str, len = 100) => {
+  return str.substring(0, len) + '...';
+}
+
 const Loading = (props) => {
   if (!props.visible) { return ''; }
   return (
@@ -11,18 +15,29 @@ const Loading = (props) => {
 
 const Messages = (props) => {
   if (props.messages.length === 0) { return ''; }
-  return map(props.messages, (message) => {
+  const items = map(props.messages, (message) => {
     const id = uniqueId(new Date().getTime());
-    return (
-      <p key={id} className="mt-0 mb-1 p-0 small">{message.message}</p>
+    const msgText = shorten(message.message);
+    return (      
+      <div className="media mb-5" key={id}>
+        <img className="prof-photo mr-3 rounded-circle" src={message.profPic} alt="Profile" />
+        <div className="media-body small">
+          <h5 className="mt-0 mb-2"><b>{message.profName}</b></h5>
+          <span className="text-muted">{msgText}...</span>
+          <small className="badge badge-secondary float-right">Sent: {message.sent}</small>
+        </div>
+      </div>
     )
   });
+  return (
+    <div>{items}</div>
+  );
 };
 
 const MessagesDialog = (props) => {
   if (!props.load) { return ''; }
   return (
-    <div className="delivery-log modal m-auto position-absolute" tabIndex="-1" role="dialog">
+    <div className="messages modal m-auto position-absolute" tabIndex="-1" role="dialog">
       <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div className="modal-content m-auto">
           <div className="modal-header justify-content-center">

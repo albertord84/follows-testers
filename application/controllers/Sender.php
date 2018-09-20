@@ -20,14 +20,12 @@ class Sender extends MY_Controller {
     
     try {
       if ($this->is_web_request()) {
-        printf("%s Not allowed to run from the browser. Terminating right now.\n",
-          $this->time_str());
+        $this->logger->write("Not allowed to run from the browser. Terminating right now.\n");
         die();
       }
   
       if ($this->is_running()) {
-        printf("%s We are already running. I will terminate right now.\n",
-          $this->time_str());
+        $this->logger->write("We are already running. I will terminate right now.\n");
         die();
       }
   
@@ -35,8 +33,7 @@ class Sender extends MY_Controller {
       $data = $this->load_message(DIRECTS_POOL_DIR . "/$msgFile");
   
       if ($data->finished) {
-        printf("%s This message is no longer being processed. Terminating...\n",
-          $this->time_str());
+        $this->logger->write("This message is no longer being processed. Terminating...\n");
         die();
       }
   
@@ -83,10 +80,9 @@ class Sender extends MY_Controller {
 
 
   private function login_instagram($data) {
-    $six_hours = 3590 * 6; // a bit less than 6h (3600 * 6)
     $instagram = null;
     $instagram = new \InstagramAPI\Instagram(false, true);
-    $instagram->login($data->userName, $data->password, $six_hours);
+    $instagram->login($data->userName, $data->password, SIX_HOURS);
     return $instagram;
   }
 
@@ -213,6 +209,7 @@ class Sender extends MY_Controller {
         $user_message_filenames,
         'msg_filenames_to_objects',
         'active_messages_only',
+        'add_reference_prof_data',
         'remove_user_creds'
       );
       return $this->success('ok', [ 'messages' => $messages ]);
@@ -233,20 +230,28 @@ class Sender extends MY_Controller {
 
   private function add_reference_prof_data($messages) {
     $instagram = null;
-
+    return array_map(function($msg) use ($instagram) {
+      if ($instagram === null) {
+        $instagram = new \InstagramAPI\Instagram(false, true);
+        $instagram->login($msg->userName, $msg->password, SIX_HOURS);
+      }
+      $user = $instagram->people
+        ->getInfoById($msg->profileId)
+        ->getUser();
+      $profName = $user->getUsername();
+      $pic = $user->getProfilePicUrl();
+      $msg->profName = $profName;
+      $msg->profPic = $pic;
+      return $msg;
+    }, $messages);
   }
 
   private function remove_user_creds($user_messages) {
     $messages = array_map(function($msg) {
-      return (object) [
-        "message" => $msg->message,
-        "profileId" => $msg->profileId,
-        "rankToken" => $msg->rankToken,
-        "maxId" => $msg->maxId,
-        "lastProf" => $msg->lastProf,
-        "finished" => $msg->finished,
-        "sent" => $msg->sent,
-      ];
+      $array = (array) $msg;
+      unset($array['userName']);
+      unset($array['password']);
+      return (object) $array;
     }, $user_messages);
     return $messages;
   }
@@ -257,14 +262,6 @@ class Sender extends MY_Controller {
       return strstr($msg_file, $username) !== false;
     });
     return $user_messages;
-  }
-
-  private function first_user_msg($username) {
-    $map = directory_map(DIRECTS_POOL_DIR, 1);
-    $user_messages = array_filter($map, function($msg_file) use ($username) {
-      return strstr($msg_file, $username) !== false;
-    });
-    return current($user_messages);
   }
 
   private function active_messages_only($messages) {

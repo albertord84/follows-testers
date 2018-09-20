@@ -135,18 +135,25 @@ img.ref-prof-pic {
   color: white;
 }
 
-.modal.delivery-log {
+.modal.delivery-log, .modal.messages {
   display: block;
   background-color: #e8e8e8ad;
 }
 
-.modal.delivery-log .modal-content {
+.modal.delivery-log .modal-content,
+.modal.messages .modal-content {
   border: 5px solid rgba(0,0,0,.1)!important;
   max-width: 600px;
 }
 
-.modal.delivery-log .modal-content .modal-body {
+.modal.delivery-log .modal-content .modal-body,
+.modal.messages .modal-content .modal-body {
   overflow: scroll;
   overflow-x: hidden;
   max-height: 250px;
+}
+
+.modal.messages .modal-content .modal-body img.prof-photo {
+  width: 64px;
+  height: 64px;
 }

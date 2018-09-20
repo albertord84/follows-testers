@@ -3,8 +3,8 @@ import { trim } from "lodash-es";
 
 import * as NProgress from "nprogress/nprogress";
 
-import store, { getRefProfileFromSearchList,
-  getDirectMsgText, getDirectDataToSend, getSelectedReferenceProfile } from "../store/index";
+import store, { getRefProfileFromSearchList, getDirectMsgText,
+  getDirectDataToSend, getSelectedReferenceProfile, getLoginName } from "../store/index";
 
 import { of, Subject } from "rxjs";
 import { fromPromise } from 'rxjs/observable/fromPromise';
@@ -12,9 +12,9 @@ import {
   filter, map, switchMap, delay, tap, catchError,
   distinctUntilChanged, debounceTime } from "rxjs/operators";
 import { setRefProfilesSearchList, setDirectReferenceProfile,
-  setDirectMessageText, 
-  loadDeliveryStats,
-  setDeliveryLog} from "../store/texting";
+  setDirectMessageText, loadDeliveryStats, setDeliveryLog, 
+  setDirectMessages,
+  loadDirectMessages} from "../store/texting";
 import history, { atTexting } from "../history";
 
 export const refProfileInput$ = new Subject();
@@ -102,8 +102,10 @@ const onToolBarButtonClick$ = new Subject().pipe(
 );
 
 export const onCloseDeliveryStatsDialog$ = new Subject();
-
 onCloseDeliveryStatsDialog$.subscribe(() => store.dispatch(loadDeliveryStats()));
+
+export const onCloseMessagesDialog$ = new Subject();
+onCloseMessagesDialog$.subscribe(() => store.dispatch(loadDirectMessages()));
 
 history.listen(location => {
   onToolBarButtonClick$.next(location.hash);
@@ -134,4 +136,31 @@ onToolBarButtonClick$.pipe(
   delay(500),
 ).subscribe(() => {
   store.dispatch(loadDeliveryStats(true));
+});
+
+onToolBarButtonClick$.pipe(
+  filter(hash => hash === '#messages'),
+  tap(() => NProgress.start()),
+  delay(500),
+  tap(() => NProgress.set(0.5)),
+  switchMap(() => {
+    const logUrl = `${global.baseUrl}/sender/messages/${getLoginName()}`;
+    const promise = Axios.post(logUrl)
+    .then(response => {
+      return response.data.messages;
+    })
+    return fromPromise(promise).pipe(
+      catchError(error => {
+        console.error(error);
+        return of(false);
+      })
+    );
+  }),
+  delay(1000),
+  tap(() => NProgress.done()),
+  filter(messages => messages !== false),
+  tap(messages => store.dispatch(setDirectMessages(messages))),
+  delay(500),
+).subscribe(() => {
+  store.dispatch(loadDirectMessages(true));
 });

@@ -14,6 +14,7 @@ import ReferenceProfileData from "./ReferenceProfileData";
 import DeliveryLog from "./DeliveryLog";
 import { onSendDirectData$ } from "../../services/Texting";
 import LeftToolBar from "./LeftToolBar";
+import MessagesDialog from "./MessagesDialog";
 
 class Container extends React.Component {
   componentWillMount() {
@@ -52,6 +53,8 @@ class Container extends React.Component {
         <LeftToolBar />
         <DeliveryLog load={props.loadDeliveryStats}
                      log={props.deliveryLog} />
+        <MessagesDialog load={props.loadDirectMessages}
+                        messages={props.messages} />
       </div>
     )
   }
@@ -64,7 +67,9 @@ const mapStateToProps = (state) => {
     searchList: state.texting.searchList,
     message: state.texting.message,
     loadDeliveryStats: state.texting.loadDeliveryStats,
-    deliveryLog: state.texting.deliveryLog
+    loadDirectMessages: state.texting.loadDirectMessages,
+    deliveryLog: state.texting.deliveryLog,
+    messages: state.texting.messages
   }
 }
 

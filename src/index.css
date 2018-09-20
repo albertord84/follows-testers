@@ -137,6 +137,7 @@ img.ref-prof-pic {
 
 .modal.delivery-log {
   display: block;
+  background-color: #e8e8e8ad;
 }
 
 .modal.delivery-log .modal-content {

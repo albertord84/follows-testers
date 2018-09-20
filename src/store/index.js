@@ -71,6 +71,8 @@ export const getDirectDataToSend = () => assign({}, {
   profileId: getReferenceProfileId()
 });
 export const loadedDeliveryStats = () => store.getState().texting.loadDeliveryStats;
+export const loadedDirectMessages = () => store.getState().texting.loadDirectMessages;
 export const getDeliveryLog = () => store.getState().texting.deliveryLog;
+export const getDirectMessages = () => store.getState().texting.messages;
 
 export default store;

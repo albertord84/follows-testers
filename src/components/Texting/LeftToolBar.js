@@ -13,10 +13,6 @@ const LeftToolBar = (props) => {
               title="Browse composed messages" replace>
           <small><i className="fa fa-envelope"></i></small>
         </Link>
-        <Link to={{hash:"#user"}} className="btn btn-default btn-xs p-1 m-1 text-secondary"
-              title="User messages" replace>
-          <small><i className="fa fa-user"></i></small>
-        </Link>
       </div>
     </div>
   );

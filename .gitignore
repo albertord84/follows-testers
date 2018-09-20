@@ -1,0 +1,15 @@
+.babelrc
+.editorconfig
+.env
+.rsync_exclude
+build
+composer.lock
+composer.phar
+node_modules/
+package-lock.json
+upload.sh
+etc/*.json
+etc/*.ini
+log/*.log
+var/*.json
+vendor/mgp25/instagram-php/sessions/*

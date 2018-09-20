@@ -208,28 +208,78 @@ class Sender extends MY_Controller {
 
   public function messages($username) {
     try {
-      $map = directory_map(DIRECTS_POOL_DIR, 1);
-      $user_messages = array_filter($map, function($msg_file) use ($username) {
-        return strstr($msg_file, $username) !== false;
-      });
-      $messages = array_map(function($msg_filename) {
-        $data = read_file(DIRECTS_POOL_DIR . '/' . $msg_filename);
-        $msgObj = json_decode($data);
-        return (object) [
-          "message" => $msgObj->message,
-          "profileId" => $msgObj->profileId,
-          "rankToken" => $msgObj->rankToken,
-          "maxId" => $msgObj->maxId,
-          "lastProf" => $msgObj->lastProf,
-          "finished" => $msgObj->finished,
-          "sent" => $msgObj->sent,
-        ];
-      }, $user_messages);
+      $user_message_filenames = $this->only_user_msg_files($username);
+      $messages = $this->prepare_message_list(
+        $user_message_filenames,
+        'msg_filenames_to_objects',
+        'active_messages_only',
+        'remove_user_creds'
+      );
       return $this->success('ok', [ 'messages' => $messages ]);
     }
     catch(\Exception $msgListEx) {
       return $this->error("Unable to list $username messages: " . $msgListEx->getMessage());
     }
+  }
+
+  private function msg_filenames_to_objects($msg_filenames) {
+    $message_objects = array_map(function($msg_filename) {
+      $data = read_file(DIRECTS_POOL_DIR . '/' . $msg_filename);
+      $msg = json_decode($data);
+      return $msg;
+    }, $msg_filenames);
+    return $message_objects;
+  }
+
+  private function add_reference_prof_data($messages) {
+    $instagram = null;
+
+  }
+
+  private function remove_user_creds($user_messages) {
+    $messages = array_map(function($msg) {
+      return (object) [
+        "message" => $msg->message,
+        "profileId" => $msg->profileId,
+        "rankToken" => $msg->rankToken,
+        "maxId" => $msg->maxId,
+        "lastProf" => $msg->lastProf,
+        "finished" => $msg->finished,
+        "sent" => $msg->sent,
+      ];
+    }, $user_messages);
+    return $messages;
+  }
+
+  private function only_user_msg_files($username) {
+    $map = directory_map(DIRECTS_POOL_DIR, 1);
+    $user_messages = array_filter($map, function($msg_file) use ($username) {
+      return strstr($msg_file, $username) !== false;
+    });
+    return $user_messages;
+  }
+
+  private function first_user_msg($username) {
+    $map = directory_map(DIRECTS_POOL_DIR, 1);
+    $user_messages = array_filter($map, function($msg_file) use ($username) {
+      return strstr($msg_file, $username) !== false;
+    });
+    return current($user_messages);
+  }
+
+  private function active_messages_only($messages) {
+    return array_filter($messages, function($msg) {
+      return $msg->finished !== true;
+    });
+  }
+
+  private function prepare_message_list($messages, ...$funcs) {
+    $methods = array_slice(func_get_args(), 1);
+    $messages = array_reduce($methods, function($carry, $method) {
+      $carry = $this->$method($carry);
+      return $carry;
+    }, $messages);
+    return $messages;
   }
 
 }

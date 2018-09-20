@@ -24,11 +24,12 @@ user_guide_src/cilexer/dist/*
 user_guide_src/cilexer/pycilexer.egg-info/*
 
 var/
-vendor/
 build/
 node_modules/
 etc/
 log/
+vendor/mgp25/instagram-php/sessions/*
+vendor/
 
 # IDE Files
 #-------------------------

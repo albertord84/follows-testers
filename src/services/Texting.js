@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { trim, isEqual } from "lodash-es";
+import { trim } from "lodash-es";
 
 import * as NProgress from "nprogress/nprogress";
 

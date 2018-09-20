@@ -107,20 +107,20 @@ img.ref-prof-pic {
   height: 100%;
 }
 
-.tools .btn-toolbar {
+/* .tools .btn-toolbar {
   visibility: hidden;
   opacity: 0;
   transition: visibility 0s, opacity 0.9s linear;
-}
+} */
 
 .tools:hover .btn-toolbar a {
   text-decoration: none;
 }
 
-.tools:hover .btn-toolbar {
+/* .tools:hover .btn-toolbar {
   visibility: visible;
   opacity: 1;
-}
+} */
 
 .tools .btn-toolbar {
   max-width: 40px;

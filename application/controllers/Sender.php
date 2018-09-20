@@ -64,11 +64,23 @@ class Sender extends MY_Controller {
       );
     }
     catch(\Exception $mainEx) {
-      $this->remove_pid_file();
+      // set message as finished to stop processing
+      $this->set_message_finished($msgFile);
+      // register and shout out the exception
       echo $mainEx->getMessage() . PHP_EOL;
       $this->logger->write(SENDER_LOG, $mainEx->getMessage());
+      // remove process id
+      $this->remove_pid_file();
     }
   }
+
+  private function set_message_finished($fileName) {
+    $fileObj = json_decode(read_file(DIRECTS_POOL_DIR . "/$fileName"));
+    $fileObj->finished = true;
+    $json = json_encode($fileObj, JSON_PRETTY_PRINT);
+    write_file(DIRECTS_POOL_DIR . "/$fileName", $json);
+  }
+
 
   private function login_instagram($data) {
     $six_hours = 3590 * 6; // a bit less than 6h (3600 * 6)

@@ -20,23 +20,23 @@ class Sender extends MY_Controller {
     
     try {
       if ($this->is_web_request()) {
-        $this->logger->write("Not allowed to run from the browser. Terminating right now.\n");
+        $this->logger->write("ERROR: Not allowed to run from the browser. Terminating right now.\n");
         die();
       }
   
       if ($this->is_running()) {
-        $this->logger->write("We are already running. I will terminate right now.\n");
+        $this->logger->write("ERROR: We are already running. I will terminate right now.\n");
+        die();
+      }
+  
+      $data = $this->load_message(DIRECTS_POOL_DIR . "/$msgFile");
+  
+      if ($data->finished) {
+        $this->logger->write("INFO: This message is no longer being processed. Terminating...\n");
         die();
       }
   
       $this->create_pid_file();
-      $data = $this->load_message(DIRECTS_POOL_DIR . "/$msgFile");
-  
-      if ($data->finished) {
-        $this->logger->write("This message is no longer being processed. Terminating...\n");
-        die();
-      }
-  
       $instagram = $this->login_instagram($data);
       $recipData = $this->get_next_recipient($instagram, $data);
       $sent = $this->send($instagram, $recipData->lastProf, $data->message);

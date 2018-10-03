@@ -20,19 +20,22 @@ class Sender extends MY_Controller {
     
     try {
       if ($this->is_web_request()) {
-        $this->logger->write("ERROR: Not allowed to run from the browser. Terminating right now.\n");
+        $this->logger->write("ERROR: Not allowed to run from the browser. Terminating right now.\n",
+			SENDER_LOG);
         die();
       }
   
       if ($this->is_running()) {
-        $this->logger->write("ERROR: We are already running. I will terminate right now.\n");
+        $this->logger->write("ERROR: We are already running. I will terminate right now.\n",
+			SENDER_LOG);
         die();
       }
   
       $data = $this->load_message(DIRECTS_POOL_DIR . "/$msgFile");
   
       if ($data->finished) {
-        $this->logger->write("INFO: This message is no longer being processed. Terminating...\n");
+        $this->logger->write("INFO: This message is no longer being processed. Terminating...\n",
+			SENDER_LOG);
         die();
       }
   
@@ -52,12 +55,12 @@ class Sender extends MY_Controller {
 
       $this->remove_pid_file();
       $this->logger->write(
-        SENDER_LOG,
         sprintf(
           "INFO: The sender %s successfully texted to %s",
           $data->profileId,
           $data->lastProf
-        )
+        ),
+	  	SENDER_LOG
       );
     }
     catch(\Exception $mainEx) {
@@ -65,7 +68,8 @@ class Sender extends MY_Controller {
       $this->set_message_finished($msgFile);
       // register and shout out the exception
       echo $mainEx->getMessage() . PHP_EOL;
-      $this->logger->write(SENDER_LOG, "ERROR: " . $mainEx->getMessage());
+      $this->logger->write("ERROR: " . $mainEx->getMessage(),
+		  SENDER_LOG);
       // remove process id
       $this->remove_pid_file();
     }
@@ -91,8 +95,8 @@ class Sender extends MY_Controller {
       \InstagramAPI\Signatures::generateUUID() : $data->rankToken;
     $nextProf = null;
     $followersResponse = $instagram->people
-      ->getFollowers($data->profileId, $rankToken, null,
-                      $data->maxId === null ? null : $data->maxId);
+		->getFollowers($data->profileId, $rankToken, null,
+			           $data->maxId === null ? null : $data->maxId);
     $list = $followersResponse->getUsers();
     $maxId = $followersResponse->getNextMaxId();
     if ($data->lastProf === '' || $data->lastProf === null) {

@@ -10,4 +10,14 @@ class Cron {
     return $hour % (int) $interval === 0;
   }
 
+  /**
+   * Returns date and time in log format: MMM DD HH:mm:ss
+   */
+  public function time_str() {
+    $d = date('j');
+    return sprintf("%s %s %s", date('M'),
+      strlen($d) === 2 ? $d : ' ' . $d,
+      date('G:i:s'));
+  }
+  
 }

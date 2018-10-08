@@ -103,8 +103,12 @@ img.ref-prof-pic {
 }
 
 .tools {
-  width: 50px;
+  width: 35px;
   height: 100%;
+}
+
+.tools .btn-toolbar button.btn > * {
+  pointer-events: none;
 }
 
 /* .tools .btn-toolbar {
@@ -113,7 +117,7 @@ img.ref-prof-pic {
   transition: visibility 0s, opacity 0.9s linear;
 } */
 
-.tools:hover .btn-toolbar a {
+.tools:hover .btn-toolbar .btn {
   text-decoration: none;
 }
 

@@ -98,13 +98,25 @@ class Sender extends MY_Controller {
         }
     }
         
-    public function messages($username) {
+    public function active_messages($username) {
+        $this->load->library('messages');
+        try {
+            $messages = $this->messages->active($username);
+            return $this->success('ok', [ 'messages' => $messages ]);
+        }
+        catch(\Exception $msgListEx) {
+            return $this->error("Unable to list $username messages: " . $msgListEx->getMessage());
+        }
+    }
+
+    public function inactive_messages($username) {
+        $this->load->library('messages');
         try {
             $user_message_filenames = $this->messages->only_user_msg_files($username);
             $messages = $this->messages->prepare_message_list(
                 $user_message_filenames,
                 'msg_filenames_to_objects',
-                'active_messages_only',
+                'inactive_messages_only',
                 'add_reference_prof_data',
                 'remove_user_creds'
             );
@@ -114,6 +126,6 @@ class Sender extends MY_Controller {
             return $this->error("Unable to list $username messages: " . $msgListEx->getMessage());
         }
     }
-        
+
 }
     

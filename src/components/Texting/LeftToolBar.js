@@ -1,18 +1,21 @@
 import React from 'react';
-import { Link } from "react-router-dom";
 
 const LeftToolBar = (props) => {
   return (
-    <div className="tools fixed-top d-flex align-items-center">
+    <div className="tools fixed-top d-flex align-items-center justify-content-center">
       <div className="btn-group-vertical btn-toolbar">
-        <Link to={{hash:"#log"}} className="btn btn-default btn-xs p-1 m-1 text-secondary"
-              title="Delivery log" replace>
+        <button className="btn btn-default btn-xs p-1 text-secondary delivery-log"
+              title="Delivery log">
           <small><i className="fa fa-bar-chart"></i></small>
-        </Link>
-        <Link to={{hash:"#messages"}} className="btn btn-default btn-xs p-1 m-1 text-secondary"
-              title="Browse composed messages" replace>
+        </button>
+        <button className="btn btn-default btn-xs p-1 text-secondary active-messages"
+              title="Browse composed messages">
           <small><i className="fa fa-envelope"></i></small>
-        </Link>
+        </button>
+        <button className="btn btn-default btn-xs p-1 text-secondary inactive-messages"
+              title="Browse stopped messages">
+          <small><i className="fa fa-envelope-open-o"></i></small>
+        </button>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { trim } from "lodash-es";
+import { trim, lowerCase, includes, split } from "lodash-es";
 
 import * as NProgress from "nprogress/nprogress";
 
@@ -8,6 +8,7 @@ import store, { getRefProfileFromSearchList, getDirectMsgText,
 
 import { of, Subject } from "rxjs";
 import { fromPromise } from 'rxjs/observable/fromPromise';
+import { fromEvent } from 'rxjs/observable/fromEvent';
 import {
   filter, map, switchMap, delay, tap, catchError,
   distinctUntilChanged, debounceTime } from "rxjs/operators";
@@ -97,22 +98,21 @@ onSendDirectData$.pipe(
   alert('Your message was successfully registered.');
 });
 
-const onToolBarButtonClick$ = new Subject().pipe(
-  filter(() => atTexting())
-);
-
 export const onCloseDeliveryStatsDialog$ = new Subject();
 onCloseDeliveryStatsDialog$.subscribe(() => store.dispatch(loadDeliveryStats()));
 
 export const onCloseMessagesDialog$ = new Subject();
 onCloseMessagesDialog$.subscribe(() => store.dispatch(loadDirectMessages()));
 
-history.listen(location => {
-  onToolBarButtonClick$.next(location.hash);
-});
+const onToolBarButtonClick$ = fromEvent(document, 'click').pipe(
+  filter(() => atTexting()),
+  filter(ev => 'button' === lowerCase(ev.target.tagName)),
+  map(ev => ev.target),
+  map(btn => btn.getAttribute('class'))
+);
 
 onToolBarButtonClick$.pipe(
-  filter(hash => hash === '#log'),
+  filter(cls => includes(split(cls, ' '), 'delivery-log')),
   tap(() => NProgress.start()),
   delay(500),
   tap(() => NProgress.set(0.5)),
@@ -139,12 +139,12 @@ onToolBarButtonClick$.pipe(
 });
 
 onToolBarButtonClick$.pipe(
-  filter(hash => hash === '#messages'),
+  filter(cls => includes(split(cls, ' '), 'active-messages')),
   tap(() => NProgress.start()),
-  delay(500),
+  delay(200),
   tap(() => NProgress.set(0.5)),
   switchMap(() => {
-    const logUrl = `${global.baseUrl}/sender/messages/${getLoginName()}`;
+    const logUrl = `${global.baseUrl}/sender/active-messages/${getLoginName()}`;
     const promise = Axios.post(logUrl)
     .then(response => {
       return response.data.messages;
@@ -156,11 +156,39 @@ onToolBarButtonClick$.pipe(
       })
     );
   }),
-  delay(1000),
+  delay(500),
   tap(() => NProgress.done()),
   filter(messages => messages !== false),
   tap(messages => store.dispatch(setDirectMessages(messages))),
-  delay(500),
+  delay(100),
 ).subscribe(() => {
   store.dispatch(loadDirectMessages(true));
 });
+
+onToolBarButtonClick$.pipe(
+  filter(cls => includes(split(cls, ' '), 'inactive-messages')),
+  tap(() => NProgress.start()),
+  delay(200),
+  tap(() => NProgress.set(0.5)),
+  switchMap(() => {
+    const logUrl = `${global.baseUrl}/sender/inactive-messages/${getLoginName()}`;
+    const promise = Axios.post(logUrl)
+    .then(response => {
+      return response.data.messages;
+    })
+    return fromPromise(promise).pipe(
+      catchError(error => {
+        console.error(error);
+        return of(false);
+      })
+    );
+  }),
+  delay(500),
+  tap(() => NProgress.done()),
+  filter(messages => messages !== false),
+  tap(messages => store.dispatch(setDirectMessages(messages))),
+  delay(100),
+).subscribe(() => {
+  store.dispatch(loadDirectMessages(true));
+});
+

@@ -29,7 +29,7 @@ class Messages {
     
     public function add_reference_prof_data($messages) {
         $instagram = null;
-        return array_map(function($msg) use ($instagram) {
+        $msg_list_with_ref_prof = array_map(function($msg) use ($instagram) {
             if ($instagram === null) {
                 $instagram = new \InstagramAPI\Instagram(false, true);
                 $instagram->login($msg->userName, $msg->password, SIX_HOURS);
@@ -43,16 +43,18 @@ class Messages {
             $msg->profPic = $pic;
             return $msg;
         }, $messages);
+        return $msg_list_with_ref_prof;
     }
     
     public function remove_user_creds($user_messages) {
-        $messages = array_map(function($msg) {
+        $msgs_without_creds = array_map(function($msg) {
             $array = (array) $msg;
             unset($array['userName']);
             unset($array['password']);
             return (object) $array;
         }, $user_messages);
-        return $messages;
+        if (true) { var_dump($msgs_without_creds); die(); }
+        return $msgs_without_creds;
     }
     
     public function only_user_msg_files($username) {
@@ -64,9 +66,17 @@ class Messages {
     }
     
     public function active_messages_only($messages) {
-        return array_filter($messages, function($msg) {
+        $active_messages = array_filter($messages, function($msg) {
             return $msg->finished !== true;
         });
+        return $active_messages;
+    }
+    
+    public function inactive_messages_only($messages) {
+        $inactive_messages = array_filter($messages, function($msg) {
+            return $msg->finished === true;
+        });
+        return $inactive_messages;
     }
     
     public function prepare_message_list($messages, ...$funcs) {
@@ -76,6 +86,30 @@ class Messages {
             return $carry;
         }, $messages);
         return $messages;
+    }
+
+    public function active($username) {
+        $user_message_filenames = $this->only_user_msg_files($username);
+        $active_messages = $this->prepare_message_list(
+            $user_message_filenames,
+            'msg_filenames_to_objects',
+            'active_messages_only',
+            'add_reference_prof_data',
+            'remove_user_creds'
+        );
+        return $active_messages;
+    }
+
+    public function inactive($username) {
+        $user_message_filenames = $this->only_user_msg_files($username);
+        $inactive_messages = $this->prepare_message_list(
+            $user_message_filenames,
+            'msg_filenames_to_objects',
+            'inactive_messages_only',
+            'add_reference_prof_data',
+            'remove_user_creds'
+        );
+        return $inactive_messages;
     }
 
     public function update($fileName, $data) {

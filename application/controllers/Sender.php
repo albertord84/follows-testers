@@ -18,6 +18,7 @@ class Sender extends MY_Controller {
   public function start($msgFile) {
     $this->load->library('logger');
     $this->load->library('process');
+    $this->load->library('instagram');
     set_time_limit(0);
     
     try {
@@ -42,9 +43,9 @@ class Sender extends MY_Controller {
       }
   
       $this->process->create_pid_file();
-      $instagram = $this->login_instagram($data);
-      $recipData = $this->get_next_recipient($instagram, $data);
-      $sent = $this->send($instagram, $recipData->lastProf, $data->message);
+      $instagram = $this->instagram->login_instagram($data);
+      $recipData = $this->instagram->get_next_recipient($instagram, $data);
+      $sent = $this->instagram->send($instagram, $recipData->lastProf, $data->message);
   
       if (!$sent) {
         throw new \Exception('Unable to text the recipient account ' . $recipData->lastProf);
@@ -84,69 +85,6 @@ class Sender extends MY_Controller {
     write_file(DIRECTS_POOL_DIR . "/$fileName", $json);
   }
 
-
-  private function login_instagram($data) {
-    $instagram = null;
-    $instagram = new \InstagramAPI\Instagram(false, true);
-    $instagram->login($data->userName, $data->password, SIX_HOURS);
-    return $instagram;
-  }
-
-  private function get_next_recipient($instagram, $data) {
-    $rankToken = $data->rankToken === null ?
-      \InstagramAPI\Signatures::generateUUID() : $data->rankToken;
-    $nextProf = null;
-    $followersResponse = $instagram->people
-		->getFollowers($data->profileId, $rankToken, null,
-			           $data->maxId === null ? null : $data->maxId);
-    $list = $followersResponse->getUsers();
-    $maxId = $followersResponse->getNextMaxId();
-    if ($data->lastProf === '' || $data->lastProf === null) {
-      $followers = $followersResponse->getUsers();
-      if (count($followers) === 0) {
-        throw new \Exception('Selected reference profile has no followers');
-      }
-      $firstProf = current($followers);
-      $nextProf = $firstProf->getPk();
-      return (object) [
-        'lastProf' => $nextProf,
-        'maxId' => $maxId,
-        'rankToken' => $rankToken,
-      ];
-    }
-    $nextProf = $this->next_prof_from($list, $data->profileId);
-    if (!$nextProf) {
-      $maxId = $followersResponse->getNextMaxId();
-      $followersResponse = $instagram->people->getFollowers($data->profileId,
-        $rankToken, null, $maxId);
-      $firstProf = current($followersResponse->getUsers());
-      $nextProf = $firstProf->getPk();
-    }
-    return (object) [
-      'lastProf' => $nextProf,
-      'maxId' => $maxId,
-      'rankToken' => $rankToken,
-    ];
-  }
-
-  private function send($instagram, $prof, $msg) {
-    $instagram->direct->sendText([ 'users' => [ $prof ] ], $msg);
-    return true;
-  }
-
-  private function next_prof_from($usersList, $lastProf) {
-    $index = 0;
-    $nextProf = array_reduce($usersList, function($carry, $user) use ($lastProf, $usersList, &$index) {
-      if ($carry === null) {
-        $next = array_key_exists($index + 1, $usersList) ?
-          $usersList[$index + 1] : null;
-        $carry = $user->getPk() === $lastProf ? $next : null;
-      }
-      $index++;
-      return $carry;
-    }, null);
-    return $nextProf !== null ? $nextProf->getPk() : false;
-  }
 
   private function set_stats($fileName, $data) {
     $fileObj = json_decode(read_file(DIRECTS_POOL_DIR . "/$fileName"));

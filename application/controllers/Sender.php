@@ -19,6 +19,7 @@ class Sender extends MY_Controller {
     $this->load->library('logger');
     $this->load->library('process');
     $this->load->library('instagram');
+    $this->load->library('messages');
     set_time_limit(0);
     
     try {
@@ -34,7 +35,7 @@ class Sender extends MY_Controller {
         die();
       }
   
-      $data = $this->load_message(DIRECTS_POOL_DIR . "/$msgFile");
+      $data = $this->messages->load_message(DIRECTS_POOL_DIR . "/$msgFile");
   
       if ($data->finished) {
         $this->logger->write("INFO: This message is no longer being processed. Terminating...\n",
@@ -68,7 +69,7 @@ class Sender extends MY_Controller {
     }
     catch(\Exception $mainEx) {
       // set message as finished to stop processing
-      $this->set_message_finished($msgFile);
+      $this->messages->set_message_finished($msgFile);
       // register and shout out the exception
       echo $mainEx->getMessage() . PHP_EOL;
       $this->logger->write("ERROR: " . $mainEx->getMessage(),
@@ -78,14 +79,6 @@ class Sender extends MY_Controller {
     }
   }
 
-  private function set_message_finished($fileName) {
-    $fileObj = json_decode(read_file(DIRECTS_POOL_DIR . "/$fileName"));
-    $fileObj->finished = true;
-    $json = json_encode($fileObj, JSON_PRETTY_PRINT);
-    write_file(DIRECTS_POOL_DIR . "/$fileName", $json);
-  }
-
-
   private function set_stats($fileName, $data) {
     $fileObj = json_decode(read_file(DIRECTS_POOL_DIR . "/$fileName"));
     $fileObj->sent = (int)$fileObj->sent + 1;
@@ -94,14 +87,6 @@ class Sender extends MY_Controller {
     $fileObj->rankToken = $data->rankToken;
     $json = json_encode($fileObj, JSON_PRETTY_PRINT);
     write_file(DIRECTS_POOL_DIR . "/$fileName", $json);
-  }
-
-  private function load_message($msg_filename) {
-    $data = read_file($msg_filename);
-    if ($data === false) {
-      throw new \Exception('Unable to load message file');
-    }
-    return json_decode($data);
   }
 
   public function delivery() {
@@ -119,8 +104,8 @@ class Sender extends MY_Controller {
 
   public function messages($username) {
     try {
-      $user_message_filenames = $this->only_user_msg_files($username);
-      $messages = $this->prepare_message_list(
+      $user_message_filenames = $this->messages->only_user_msg_files($username);
+      $messages = $this->messages->prepare_message_list(
         $user_message_filenames,
         'msg_filenames_to_objects',
         'active_messages_only',
@@ -132,66 +117,6 @@ class Sender extends MY_Controller {
     catch(\Exception $msgListEx) {
       return $this->error("Unable to list $username messages: " . $msgListEx->getMessage());
     }
-  }
-
-  private function msg_filenames_to_objects($msg_filenames) {
-    $message_objects = array_map(function($msg_filename) {
-      $data = read_file(DIRECTS_POOL_DIR . '/' . $msg_filename);
-      $msg = json_decode($data);
-      return $msg;
-    }, $msg_filenames);
-    return $message_objects;
-  }
-
-  private function add_reference_prof_data($messages) {
-    $instagram = null;
-    return array_map(function($msg) use ($instagram) {
-      if ($instagram === null) {
-        $instagram = new \InstagramAPI\Instagram(false, true);
-        $instagram->login($msg->userName, $msg->password, SIX_HOURS);
-      }
-      $user = $instagram->people
-        ->getInfoById($msg->profileId)
-        ->getUser();
-      $profName = $user->getUsername();
-      $pic = $user->getProfilePicUrl();
-      $msg->profName = $profName;
-      $msg->profPic = $pic;
-      return $msg;
-    }, $messages);
-  }
-
-  private function remove_user_creds($user_messages) {
-    $messages = array_map(function($msg) {
-      $array = (array) $msg;
-      unset($array['userName']);
-      unset($array['password']);
-      return (object) $array;
-    }, $user_messages);
-    return $messages;
-  }
-
-  private function only_user_msg_files($username) {
-    $map = directory_map(DIRECTS_POOL_DIR, 1);
-    $user_messages = array_filter($map, function($msg_file) use ($username) {
-      return strstr($msg_file, $username) !== false;
-    });
-    return $user_messages;
-  }
-
-  private function active_messages_only($messages) {
-    return array_filter($messages, function($msg) {
-      return $msg->finished !== true;
-    });
-  }
-
-  private function prepare_message_list($messages, ...$funcs) {
-    $methods = array_slice(func_get_args(), 1);
-    $messages = array_reduce($methods, function($carry, $method) {
-      $carry = $this->$method($carry);
-      return $carry;
-    }, $messages);
-    return $messages;
   }
 
 }

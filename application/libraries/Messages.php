@@ -77,5 +77,15 @@ class Messages {
         }, $messages);
         return $messages;
     }
+
+    public function update($fileName, $data) {
+        $fileObj = json_decode(read_file(DIRECTS_POOL_DIR . "/$fileName"));
+        $fileObj->sent = (int)$fileObj->sent + 1;
+        $fileObj->lastProf = $data->lastProf;
+        $fileObj->maxId = $data->maxId;
+        $fileObj->rankToken = $data->rankToken;
+        $json = json_encode($fileObj, JSON_PRETTY_PRINT);
+        write_file(DIRECTS_POOL_DIR . "/$fileName", $json);
+    }
     
 }

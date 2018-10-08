@@ -6,28 +6,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Sender extends MY_Controller {
 
   /**
-   * Invoked from the cron using a PHP executable sentence, passing
-   * the index.php filepath as first parameter, the name of this
-   * class in lower case as second parameter, this method name as
-   * third parameter, and the message filename to process as fourth
-   * parameter.
+   * Invocar desde el cron pasando el camino a este script PHP
+   * como primer parametro; el nombre de esta clase en minuscula
+   * como segundo parametro; este metodo como tercer parametro;
+   * y como cuarto parametro el nombre del archivo JSON que es
+   * el mensaje que se procesara, y que se encuentra dentro del
+   * directorio var.
    * 
-   * @param $msgFile Message filename to process.
+   * @param $msgFile Nombre del archivo del mensaje a procesar.
    */
   public function start($msgFile) {
     $this->load->library('logger');
+    $this->load->library('process');
     set_time_limit(0);
     
     try {
-      if ($this->is_web_request()) {
+      if ($this->process->is_web_request()) {
         $this->logger->write("ERROR: Not allowed to run from the browser. Terminating right now.\n",
-			SENDER_LOG);
+			    SENDER_LOG);
         die();
       }
   
-      if ($this->is_running()) {
+      if ($this->process->is_running()) {
         $this->logger->write("ERROR: We are already running. I will terminate right now.\n",
-			SENDER_LOG);
+			    SENDER_LOG);
         die();
       }
   
@@ -35,11 +37,11 @@ class Sender extends MY_Controller {
   
       if ($data->finished) {
         $this->logger->write("INFO: This message is no longer being processed. Terminating...\n",
-			SENDER_LOG);
+			    SENDER_LOG);
         die();
       }
   
-      $this->create_pid_file();
+      $this->process->create_pid_file();
       $instagram = $this->login_instagram($data);
       $recipData = $this->get_next_recipient($instagram, $data);
       $sent = $this->send($instagram, $recipData->lastProf, $data->message);
@@ -53,14 +55,14 @@ class Sender extends MY_Controller {
       $data->rankToken = $recipData->rankToken;
       $this->set_stats($msgFile, $data);
 
-      $this->remove_pid_file();
+      $this->process->remove_pid_file();
       $this->logger->write(
         sprintf(
           "INFO: The sender %s successfully texted to %s",
           $data->profileId,
           $data->lastProf
         ),
-	  	SENDER_LOG
+	  	  SENDER_LOG
       );
     }
     catch(\Exception $mainEx) {
@@ -69,9 +71,9 @@ class Sender extends MY_Controller {
       // register and shout out the exception
       echo $mainEx->getMessage() . PHP_EOL;
       $this->logger->write("ERROR: " . $mainEx->getMessage(),
-		  SENDER_LOG);
+		    SENDER_LOG);
       // remove process id
-      $this->remove_pid_file();
+      $this->process->remove_pid_file();
     }
   }
 
@@ -154,35 +156,6 @@ class Sender extends MY_Controller {
     $fileObj->rankToken = $data->rankToken;
     $json = json_encode($fileObj, JSON_PRETTY_PRINT);
     write_file(DIRECTS_POOL_DIR . "/$fileName", $json);
-  }
-
-  private function is_web_request() {
-    return is_cli() === false;
-  }
-
-  /**
-   * Returns date and time in log format: MMM DD HH:mm:ss
-   */
-  private function time_str() {
-    $d = date('j');
-    return sprintf("%s %s %s", date('M'),
-      strlen($d) === 2 ? $d : ' ' . $d,
-      date('G:i:s'));
-  }
-
-  private function is_running() {
-    return file_exists(DIRECTS_PID_FILE);
-  }
-
-  private function create_pid_file() {
-    file_put_contents(DIRECTS_PID_FILE, '');
-  }
-
-  private function remove_pid_file() {
-    $pid = DIRECTS_PID_FILE;
-    if (file_exists($pid)) {
-      unlink($pid);
-    }
   }
 
   private function load_message($msg_filename) {

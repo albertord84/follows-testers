@@ -107,9 +107,9 @@ img.ref-prof-pic {
   height: 100%;
 }
 
-.tools .btn-toolbar button.btn > * {
+/* .tools .btn-toolbar button.btn > * {
   pointer-events: none;
-}
+} */
 
 /* .tools .btn-toolbar {
   visibility: hidden;

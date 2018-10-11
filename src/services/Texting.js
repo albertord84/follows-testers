@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { trim, lowerCase, includes, split } from "lodash-es";
+import { trim, includes, split } from "lodash-es";
 
 import * as NProgress from "nprogress/nprogress";
 
@@ -8,7 +8,6 @@ import store, { getRefProfileFromSearchList, getDirectMsgText,
 
 import { of, Subject } from "rxjs";
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { fromEvent } from 'rxjs/observable/fromEvent';
 import {
   filter, map, switchMap, delay, tap, catchError,
   distinctUntilChanged, debounceTime } from "rxjs/operators";
@@ -16,7 +15,6 @@ import { setRefProfilesSearchList, setDirectReferenceProfile,
   setDirectMessageText, loadDeliveryStats, setDeliveryLog, 
   setDirectMessages,
   loadDirectMessages} from "../store/texting";
-import history, { atTexting } from "../history";
 
 export const refProfileInput$ = new Subject();
 
@@ -104,15 +102,10 @@ onCloseDeliveryStatsDialog$.subscribe(() => store.dispatch(loadDeliveryStats()))
 export const onCloseMessagesDialog$ = new Subject();
 onCloseMessagesDialog$.subscribe(() => store.dispatch(loadDirectMessages()));
 
-const onToolBarButtonClick$ = fromEvent(document, 'click').pipe(
-  filter(() => atTexting()),
-  filter(ev => 'button' === lowerCase(ev.target.tagName)),
-  map(ev => ev.target),
-  map(btn => btn.getAttribute('class'))
-);
+export const onToolBarButtonClick$ = new Subject();
 
 onToolBarButtonClick$.pipe(
-  filter(cls => includes(split(cls, ' '), 'delivery-log')),
+  filter(el => includes(split(el.className, ' '), 'delivery-log')),
   tap(() => NProgress.start()),
   delay(500),
   tap(() => NProgress.set(0.5)),
@@ -139,7 +132,7 @@ onToolBarButtonClick$.pipe(
 });
 
 onToolBarButtonClick$.pipe(
-  filter(cls => includes(split(cls, ' '), 'active-messages')),
+  filter(el => includes(split(el.className, ' '), 'active-messages')),
   tap(() => NProgress.start()),
   delay(200),
   tap(() => NProgress.set(0.5)),
@@ -166,7 +159,7 @@ onToolBarButtonClick$.pipe(
 });
 
 onToolBarButtonClick$.pipe(
-  filter(cls => includes(split(cls, ' '), 'inactive-messages')),
+  filter(el => includes(split(el.className, ' '), 'inactive-messages')),
   tap(() => NProgress.start()),
   delay(200),
   tap(() => NProgress.set(0.5)),

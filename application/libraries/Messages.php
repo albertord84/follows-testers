@@ -53,7 +53,6 @@ class Messages {
             unset($array['password']);
             return (object) $array;
         }, $user_messages);
-        if (true) { var_dump($msgs_without_creds); die(); }
         return $msgs_without_creds;
     }
     

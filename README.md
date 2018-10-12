@@ -92,3 +92,31 @@ en **etc** se guardan las configuraciones que sufren cambios cuando se interactu
 en **log** esta de más decir por qué se requieren dichos permisos. alli estan las trazas de lo que va ocurriendo, por ende debe existir el permiso de escritura irrestricto.
 
 en **var** se guardan los mensajes que luego cogera la tarea del cron para hacer los envios de mensajes a los seguidores de los perfiles de referencia.
+
+### Extraer estadísticas del usuario
+
+```
+grep -n nombre_cuenta_ig /camino/del/archivo/daily_report-20501003.log
+```
+
+esto nos dara el numero de la linea en que se encuentra el nombre de la cuenta del usuario. se obtiene algo como esto:
+
+```
+452:<br><br><br>string(16) "nombre_cuenta_ig"
+```
+
+el numero a la izquierda corresponde al numero de la linea donde esta el nombre de la cuenta cuya estadistica se desea conocer. luego, sumandole uno a ese numero, se obtiene la linea siguiente en el archivo, que contiene la cantidad de follows que se realizaron con dicha cuenta. esto es posible con el comando:
+
+```
+head -n 453 /camino/del/archivo/daily_report-20501003.log | tail -n 1
+```
+
+como la linea donde estaba el nombre era la 452, la linea 453 (452 + 1), es la que contiene lo que deseamos conocer.
+
+#### Establecer rango de fecha para sacar la estadistica
+
+```
+ls /camino/hacia/archivos/daily_report | awk '/20181003/,/20181007/ {print $0}'
+```
+
+esto nos ofrecera el listado de los archivos que haya en el directorio especificado, cuyos nombres esten comprendidos entre las fechas entre los slash.

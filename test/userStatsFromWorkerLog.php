@@ -6,14 +6,20 @@ $handle = fopen(LOG_FILE, "r");
 
 if ($handle) {
     $stat = null;
+    $c = 0;
+    printf("[");
     while (($line = fgets($handle)) !== false) {
         if (preg_match('/^Client\: (\d+)/', $line, $client_data)===1) {
-            print_r($stat); // imprimo el anterior
+            if ($stat !== null) {
+                printf("%s", $c === 0 ? "" : ",");
+                printf("%s", json_encode($stat));
+                $c++;
+            }
             $stat = []; // comienzo uno nuevo
-            $stat['client_id'] = $client_data[1];
+            $stat['client_id'] = (int) $client_data[1];
         }
         if (preg_match('/like firsts = \d+\): (\d+) \</', $line, $follows)===1) {
-            $stat['followed'] = $follows[1];
+            $stat['followed'] = (int) $follows[1];
         }
         if (strstr($line, 'nRef Profil: ')!==false) {
             preg_match('/nRef Profil: (.*)\</', $line, $prof_data);
@@ -26,6 +32,7 @@ if ($handle) {
         }
     }
     fclose($handle);
+    printf("]");
 } else {
     echo 'Error al abrir archivo ' . LOG_FILE;
 }

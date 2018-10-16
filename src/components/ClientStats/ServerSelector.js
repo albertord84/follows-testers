@@ -1,6 +1,8 @@
 import React from 'react';
 import { serverSelect$ } from '../../services/ClientStats';
 
+import StatDates from './StatDates';
+
 const ServerSelector = (props) => {
     return (
         <div className="card mb-4 box-shadow">
@@ -22,7 +24,7 @@ const ServerSelector = (props) => {
                         <label className="custom-control-label" htmlFor="serverPro">dumbu.pro</label>
                     </div>
                 </div>
-                
+                <StatDates dates={props.dates} />
             </div>
         </div>
         );

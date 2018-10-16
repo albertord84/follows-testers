@@ -1,16 +1,18 @@
 import React from 'react';
+import { map, uniqueId } from 'lodash-es';
 
 const dateList = (dates) => {
-    return dates.forEach(date => {
+    return map(dates, date => {
+        const key = uniqueId(new Date().getTime());
         return (
-            <span class="badge badge-secondary m-3">{date}</span>
+            <span key={key} className="badge badge-secondary m-1 p-2 m-pointer">{date}</span>
         );
     });
 }
 
 const StatDates = (props) => {
     return (
-        <div className="row mt-3">{dateList(props.dates)}</div>
+        <div className="row mt-3 pl-2">{dateList(props.dates)}</div>
     );
 };
 

@@ -7,7 +7,7 @@ const ServerSelector = (props) => {
                 <h4 className="my-0 font-weight-normal">Dumbu Server</h4>
             </div>
             <div className="card-body">
-                <div className="input-group autocomplete">
+                <div className="input-group">
                     <div className="custom-control custom-radio custom-control-inline">
                         <input type="radio" id="serverOne" name="statServer" className="custom-control-input"/>
                         <label className="custom-control-label" htmlFor="serverOne">dumbu.one</label>

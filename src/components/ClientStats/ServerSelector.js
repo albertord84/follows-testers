@@ -1,4 +1,5 @@
 import React from 'react';
+import { serverSelect$ } from '../../services/ClientStats';
 
 const ServerSelector = (props) => {
     return (
@@ -9,11 +10,15 @@ const ServerSelector = (props) => {
             <div className="card-body">
                 <div className="input-group">
                     <div className="custom-control custom-radio custom-control-inline">
-                        <input type="radio" id="serverOne" name="statServer" className="custom-control-input"/>
+                        <input type="radio" id="serverOne" name="statServer"
+                               value="one" className="custom-control-input"
+                               onClick={(ev) => serverSelect$.next(ev.target)} />
                         <label className="custom-control-label" htmlFor="serverOne">dumbu.one</label>
                     </div>
                     <div className="custom-control custom-radio custom-control-inline ml-4">
-                        <input type="radio" id="serverPro" name="statServer" className="custom-control-input"/>
+                        <input type="radio" id="serverPro" name="statServer"
+                               value="pro" className="custom-control-input"
+                               onClick={(ev) => serverSelect$.next(ev.target)} />
                         <label className="custom-control-label" htmlFor="serverPro">dumbu.pro</label>
                     </div>
                 </div>

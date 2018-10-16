@@ -10,6 +10,7 @@ import ClientSelector from "./ClientSelector";
 import StatsPanel from "./StatsPanel";
 
 import { redirectNotLogged } from "../../services/User";
+import { isLogged, getStatsServer, getStatsClientName, getStatsClientId, getStatsPeriod, getClientStats } from "../../store";
 
 class Container extends React.Component {
     componentWillMount() {
@@ -19,7 +20,6 @@ class Container extends React.Component {
     }
     render() {
         const props = this.props;
-        
         return (
             <div>
                 <TopBar/>
@@ -30,13 +30,17 @@ class Container extends React.Component {
                 <div className="container">
                     <div className="row justify-content-center">
                         <div className="col-6">
-                            <ServerSelector />
+                            <ServerSelector server={props.server}
+                                            period={props.period} />
                         </div>
                         <div className="col-6">
-                            <ClientSelector />
+                            <ClientSelector clientName={props.clientName}
+                                            clientId={props.clientId}
+                                            server={props.server} />
                         </div>
                         <div className="col-12">
-                            <StatsPanel />
+                            <StatsPanel stats={props.stats}
+                                        period={props.period} />
                         </div>
                     </div>
                 <Footer />
@@ -48,7 +52,12 @@ class Container extends React.Component {
     
 const mapStateToProps = (state) => {
     return {
-        logged: state.user.logged
+        logged: isLogged(),
+        server: getStatsServer(),
+        clientName: getStatsClientName(),
+        clientId: getStatsClientId(),
+        period: getStatsPeriod(),
+        stats: getClientStats()
     }
 }
 

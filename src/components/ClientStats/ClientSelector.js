@@ -10,7 +10,8 @@ const ClientSelector = (props) => {
                 <div className="input-group-lg">
                     <input type="text" id="clientName" name="clientName"
                            className="form-control" placeholder="Client name"
-                           required="" autoComplete="off" />
+                           required="" autoComplete="off"
+                           disabled={props.server === ''} />
                 </div>
             </div>
         </div>

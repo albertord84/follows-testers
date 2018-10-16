@@ -16,6 +16,7 @@ global.store = process.env.NODE_ENV === 'development' ? store : false;
 
 // login selectors
 
+export const isLogged = () => store.getState().user.logged;
 export const getLoginName = () => store.getState().user.userName;
 export const getLoginPasswd = () => store.getState().user.password;
 export const validLoginCreds = () => !isEmpty(getLoginName()) && !isEmpty(getLoginPasswd());

@@ -51,7 +51,7 @@ logDateSelect$.pipe(
     tap(() => NProgress.set(0.3)),
     delay(200),
     switchMap(period => {
-        const searchUrl = `${global.baseUrl}/stats/users/${server}/${period}`;
+        const searchUrl = `${global.baseUrl}/stats/users/${getStatsServer()}/${period}`;
         const promise = Axios.post(searchUrl)
         .then(response => {
             return response.data.stats;

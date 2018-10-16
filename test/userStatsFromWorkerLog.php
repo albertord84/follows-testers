@@ -1,6 +1,25 @@
 <?php
 
-define('LOG_FILE', $argv[1]);
+//////////////////////////////////////////////////////////////////////////
+// ESTO ES LO QUE HAY QUE CAMBIAR SEGUN EL HOST DONDE ESTE ESTE SCRIPT
+//////////////////////////////////////////////////////////////////////////
+$logs_dir = '/opt/lampp/htdocs/dumbu/worker/log';
+
+$rnd = mt_rand(0, 10) * mt_rand(10, 100) * mt_rand(100, 1000);
+$log_date = $_REQUEST['log'];
+$out_log = sprintf("/tmp/dumbo-worker.%s.log", $rnd);
+
+shell_exec(
+    sprintf(
+        "cat %s/dumbo-worker*%s.log > %s",
+        $logs_dir, $log_date, $out_log
+    )
+);
+
+define(
+    'LOG_FILE',
+    $out_log
+);
 
 $handle = fopen(LOG_FILE, "r");
 
@@ -36,3 +55,5 @@ if ($handle) {
 } else {
     echo 'Error al abrir archivo ' . LOG_FILE;
 }
+
+unlink($out_log);

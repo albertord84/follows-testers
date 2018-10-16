@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 
 import TopBar from "../TopBar";
 import Footer from "../Footer";
+import ServerSelector from "./ServerSelector";
 
 import { redirectNotLogged } from "../../services/User";
 
@@ -26,7 +27,7 @@ class Container extends React.Component {
         </div>
         <div className="container">
           <div className="row justify-content-center">
-            
+            <ServerSelector />
           </div>
           <Footer />
         </div>

@@ -6,6 +6,7 @@ import LoginTest from "./LoginTest";
 import FollowTest from "./FollowTest";
 import NotFound from "./NotFound";
 import Texting from "./Texting";
+import ClientStats from "./ClientStats";
 
 import history from "../history";
 
@@ -21,6 +22,7 @@ class App extends React.Component {
             <Route exact path="/test/login" component={LoginTest} />
             <Route exact path="/test/follow" component={FollowTest} />
             <Route exact path="/texting" component={Texting} />
+            <Route exact path="/client/stats" component={ClientStats} />
             <Route component={NotFound} />
           </Switch>
         </div>

@@ -10,7 +10,7 @@ import ClientSelector from "./ClientSelector";
 import StatsPanel from "./StatsPanel";
 
 import { redirectNotLogged } from "../../services/User";
-import { isLogged, getStatsServer, getStatsClientName, getStatsClientId, getStatsPeriod, getClientStats } from "../../store";
+import { isLogged, getStatsServer, getStatsClientName, getStatsClientId, getStatsPeriod, getClientStats, getStatDates } from "../../store";
 
 class Container extends React.Component {
     componentWillMount() {
@@ -31,12 +31,14 @@ class Container extends React.Component {
                     <div className="row justify-content-center">
                         <div className="col-6">
                             <ServerSelector server={props.server}
-                                            period={props.period} />
+                                            period={props.period}
+                                            dates={props.dates} />
                         </div>
                         <div className="col-6">
                             <ClientSelector clientName={props.clientName}
                                             clientId={props.clientId}
-                                            server={props.server} />
+                                            server={props.server}
+                                            hasStats={props.stats.length > 0} />
                         </div>
                         <div className="col-12">
                             <StatsPanel stats={props.stats}
@@ -57,7 +59,8 @@ const mapStateToProps = (state) => {
         clientName: getStatsClientName(),
         clientId: getStatsClientId(),
         period: getStatsPeriod(),
-        stats: getClientStats()
+        stats: getClientStats(),
+        dates: getStatDates()
     }
 }
 

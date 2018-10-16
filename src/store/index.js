@@ -81,5 +81,6 @@ export const getStatsClientName = () => store.getState().clientStats.clientName;
 export const getStatsClientId = () => store.getState().clientStats.clientId;
 export const getStatsPeriod = () => store.getState().clientStats.period;
 export const getClientStats = () => store.getState().clientStats.stats;
+export const getStatDates = () => store.getState().clientStats.dates;
 
 export default store;

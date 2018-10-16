@@ -20,5 +20,6 @@ import { setStatsServer } from "../store/clientStats";
 export const serverSelect$ = new Subject();
 
 serverSelect$.pipe(
-    map$(inputEl => inputEl.getAttribute('value'))
-).subscribe(server => store.dispatch(setStatsServer(server)));
+    map$(inputEl => inputEl.getAttribute('value')),
+    tap(server => store.dispatch(setStatsServer(server)))
+).subscribe(server => {});

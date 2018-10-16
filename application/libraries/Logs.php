@@ -17,10 +17,29 @@ class Logs {
             throw new \Exception('No stats found for server ' . $server_abrev);
         }
         $host = $server->server;
-        $url = sprintf("https://%s/%s", $host, $statServersConfig->script);
+        $url = sprintf(
+            "https://%s/%s",
+            $host, $statServersConfig->logsScript
+        );
         $remote_content = file_get_contents($url);
         $log_dates_array = (array) json_decode($remote_content);
         return $log_dates_array;
+    }
+
+    public function users_from(string $server_abrev, string $log_date) {
+        $statServersConfig = $this->load_config();
+        $server = $this->get_server($server_abrev, $statServersConfig->servers);
+        if ($server === null) {
+            throw new \Exception('No stats found for server ' . $server_abrev);
+        }
+        $host = $server->server;
+        $url = sprintf(
+            "https://%s/%s?log=%s",
+            $host, $statServersConfig->usersScript, $log_date
+        );
+        $remote_content = file_get_contents($url);
+        $log_users_array = (array) json_decode($remote_content);
+        return $log_users_array;
     }
 
     private function load_config() {

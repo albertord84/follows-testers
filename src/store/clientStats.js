@@ -54,25 +54,25 @@ export const setStatsServer = (server) => {
     };
 }
 
-export const setSetStatsClient = (clientData) => {
+export const setStatsClient = (clientData) => {
     return {
         type: SET_STATS_CLIENT, payload: clientData
     };
 }
 
-export const setSetStatsPeriod = (period) => {
+export const setStatsPeriod = (period) => {
     return {
         type: SET_STATS_PERIOD, payload: period
     };
 }
 
-export const setSetClientStats = (stats) => {
+export const setClientStats = (stats) => {
     return {
         type: SET_CLIENT_STATS, payload: stats
     };
 }
 
-export const setStatsDates = (dates) => {
+export const setStatDates = (dates) => {
     return {
         type: SET_STAT_DATES, payload: dates
     };

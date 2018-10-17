@@ -11,7 +11,7 @@ import StatsPanel from "./StatsPanel";
 
 import { redirectNotLogged } from "../../services/User";
 import { isLogged, getStatsServer, getStatsClientName, getStatsClientId,
-    getStatsPeriod, getClientStats, getStatDates, getStatsPage } from "../../store";
+    getStatsPeriod, getClientStats, getStatDates, getStatsPage, getTotalStats } from "../../store";
 
 class Container extends React.Component {
     componentWillMount() {
@@ -43,7 +43,9 @@ class Container extends React.Component {
                         </div>
                         <div className="col-12">
                             <StatsPanel stats={props.stats}
-                                        period={props.period} />
+                                        period={props.period}
+                                        page={props.page}
+                                        total={props.total} />
                         </div>
                     </div>
                 <Footer />
@@ -62,7 +64,8 @@ const mapStateToProps = (state) => {
         period: getStatsPeriod(),
         stats: getClientStats(),
         dates: getStatDates(),
-        page: getStatsPage()
+        page: getStatsPage(),
+        total: getTotalStats()
     }
 }
 

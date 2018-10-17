@@ -6,6 +6,9 @@ const SET_STATS_PERIOD = 'SET_STATS_PERIOD';
 const SET_CLIENT_STATS = 'SET_CLIENT_STATS';
 const SET_STAT_DATES = 'SET_STAT_DATES';
 const SET_STATS_PAGE = 'SET_STATS_PAGE';
+const SET_TOTAL_STATS = 'SET_TOTAL_STATS';
+const INC_STATS_PAGE = 'INC_STATS_PAGE';
+const DEC_STATS_PAGE = 'DEC_STATS_PAGE';
 
 const clientStatState = {
     server: '',
@@ -14,6 +17,7 @@ const clientStatState = {
     period: '',
     dates: [],
     stats: [],
+    totalStats: 0,
     page: 1
 }
 
@@ -48,6 +52,21 @@ const clientStats = (state = clientStatState, action) => {
         case SET_STATS_PAGE: {
             return assign({}, state, {
                 page: action.payload
+            });
+        }
+        case SET_TOTAL_STATS: {
+            return assign({}, state, {
+                totalStats: action.payload
+            });
+        }
+        case INC_STATS_PAGE: {
+            return assign({}, state, {
+                page: state.page + 1
+            });
+        }
+        case DEC_STATS_PAGE: {
+            return assign({}, state, {
+                page: state.page - 1
             });
         }
         default:
@@ -89,6 +108,20 @@ export const setStatsPage = (page) => {
     return {
         type: SET_STATS_PAGE, payload: page
     };
+}
+
+export const setTotalStats = (total) => {
+    return {
+        type: SET_TOTAL_STATS, payload: total
+    };
+}
+
+export const incStatsPage = () => {
+    return { type: INC_STATS_PAGE };
+}
+
+export const decStatsPage = () => {
+    return { type: DEC_STATS_PAGE };
 }
 
 export default clientStats;

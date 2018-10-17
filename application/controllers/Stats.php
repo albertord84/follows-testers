@@ -21,7 +21,7 @@ class Stats extends MY_Controller {
             $this->load->library('logs');
             $stats = $this->logs->users_from($server, $log_date, $page);
             return $this->success('ok', [
-                'stats' => $stats
+                'data' => $stats
             ]);
         }
         catch(\Exception $serverStatsEx) {

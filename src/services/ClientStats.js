@@ -12,17 +12,18 @@ import {
 } from "rxjs/operators";
 
 import store, { getStatsServer, getStatsPage } from "../store/index";
-import { setStatsServer, setStatDates, setClientStats, setStatsPeriod } from "../store/clientStats";
+import { setStatsServer, setStatDates, setClientStats, setStatsPeriod, setStatsPage, setTotalStats, incStatsPage } from "../store/clientStats";
 
 export const serverSelect$ = new Subject();
 export const logDateSelect$ = new Subject();
+export const moreStatsClick$ = new Subject();
 
 serverSelect$.pipe(
     map$(inputEl => inputEl.getAttribute('value')),
     tap(server => store.dispatch(setStatsServer(server))),
     tap(() => store.dispatch(setStatDates([]))),
+    tap(() => store.dispatch(setClientStats([]))),
     tap(() => NProgress.start()),
-    tap(() => NProgress.set(0.3)),
     delay(200),
     switchMap(server => {
         const searchUrl = `${global.baseUrl}/stats/server/${server}`;
@@ -48,13 +49,12 @@ logDateSelect$.pipe(
     tap(period => store.dispatch(setStatsPeriod(period))),
     tap(() => store.dispatch(setClientStats([]))),
     tap(() => NProgress.start()),
-    tap(() => NProgress.set(0.3)),
     delay(200),
     switchMap(period => {
         const searchUrl = `${global.baseUrl}/stats/users/${getStatsServer()}/${period}/${getStatsPage()}`;
         const promise = Axios.post(searchUrl)
         .then(response => {
-            return response.data.stats;
+            return response.data;
         });
         return fromPromise(promise);
     }),
@@ -63,8 +63,18 @@ logDateSelect$.pipe(
         return of([]);
     }),
     delay(500),
+    map$(resp => resp.data), // para evitar response.data.data en el then de la promise
+    tap(data => store.dispatch(setStatsPage(data.page))),
+    tap(data => store.dispatch(setTotalStats(data.total))),
     tap(() => NProgress.done()),
-    tap(() => console.log(`loaded user stats for server ${getStatsServer()}`))
+    tap(() => console.log(`loaded user stats for server ${getStatsServer()}`)),
+    map$(data => data.stats)
 ).subscribe(stats => {
     store.dispatch(setClientStats(stats));
 });
+
+moreStatsClick$.pipe(
+    tap(() => store.dispatch(incStatsPage()))
+).subscribe(() => {
+    
+})

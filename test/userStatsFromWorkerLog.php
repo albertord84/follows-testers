@@ -39,7 +39,7 @@ if ($handle) {
             }
             $stat = []; // comienzo uno nuevo
             $stat['client_id'] = (int) $client_data[1];
-            $stat['num'] = (int) $c * $page;
+            $stat['num'] = $c;
         }
         if (preg_match('/like firsts = \d+\): (\d+) \</', $line, $follows)===1) {
             $stat['followed'] = (int) $follows[1];
@@ -60,13 +60,15 @@ if ($handle) {
     echo 'Error al abrir archivo ' . LOG_FILE;
 }
 
+$total = trim(shell_exec("grep -c client_id $tmp_log"));
+
 if ($page == 1 || $page == 0) {
     $head = trim(shell_exec("head -n 50 $tmp_log"));
     $array = explode(PHP_EOL, $head);
     $objects = array_map(function($str) {
         return (array)json_decode($str);
     }, $array);
-    echo json_encode($objects);
+    echo json_encode(['total' => $total, 'page' => $page, 'stats' => $objects]);
 }
 else {
     $top = 50 * $page;
@@ -75,7 +77,7 @@ else {
     $objects = array_map(function($str) {
         return (array)json_decode($str);
     }, $array);
-    echo json_encode($objects);
+    echo json_encode(['total' => $total, 'page' => $page, 'stats' => $objects]);
 }
 
 unlink($out_log);

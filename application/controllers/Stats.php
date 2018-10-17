@@ -16,10 +16,10 @@ class Stats extends MY_Controller {
         }
     }
 
-    public function users(string $server, string $log_date) {
+    public function users(string $server, string $log_date, int $page = 1) {
         try {
             $this->load->library('logs');
-            $stats = $this->logs->users_from($server, $log_date);
+            $stats = $this->logs->users_from($server, $log_date, $page);
             return $this->success('ok', [
                 'stats' => $stats
             ]);

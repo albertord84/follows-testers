@@ -26,7 +26,7 @@ class Logs {
         return $log_dates_array;
     }
 
-    public function users_from(string $server_abrev, string $log_date) {
+    public function users_from(string $server_abrev, string $log_date, int $page = 1) {
         $statServersConfig = $this->load_config();
         $server = $this->get_server($server_abrev, $statServersConfig->servers);
         if ($server === null) {
@@ -34,8 +34,8 @@ class Logs {
         }
         $host = $server->server;
         $url = sprintf(
-            "https://%s/%s?log=%s",
-            $host, $statServersConfig->usersScript, $log_date
+            "https://%s/%s?log=%s&p=%s",
+            $host, $statServersConfig->usersScript, $log_date, $page
         );
         $remote_content = file_get_contents($url);
         $log_users_array = (array) json_decode($remote_content);

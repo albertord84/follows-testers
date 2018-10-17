@@ -10,7 +10,8 @@ import ClientSelector from "./ClientSelector";
 import StatsPanel from "./StatsPanel";
 
 import { redirectNotLogged } from "../../services/User";
-import { isLogged, getStatsServer, getStatsClientName, getStatsClientId, getStatsPeriod, getClientStats, getStatDates } from "../../store";
+import { isLogged, getStatsServer, getStatsClientName, getStatsClientId,
+    getStatsPeriod, getClientStats, getStatDates, getStatsPage } from "../../store";
 
 class Container extends React.Component {
     componentWillMount() {
@@ -60,7 +61,8 @@ const mapStateToProps = (state) => {
         clientId: getStatsClientId(),
         period: getStatsPeriod(),
         stats: getClientStats(),
-        dates: getStatDates()
+        dates: getStatDates(),
+        page: getStatsPage()
     }
 }
 

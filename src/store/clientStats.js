@@ -5,6 +5,7 @@ const SET_STATS_CLIENT = 'SET_STATS_CLIENT';
 const SET_STATS_PERIOD = 'SET_STATS_PERIOD';
 const SET_CLIENT_STATS = 'SET_CLIENT_STATS';
 const SET_STAT_DATES = 'SET_STAT_DATES';
+const SET_STATS_PAGE = 'SET_STATS_PAGE';
 
 const clientStatState = {
     server: '',
@@ -12,7 +13,8 @@ const clientStatState = {
     clientId: '',
     period: '',
     dates: [],
-    stats: []
+    stats: [],
+    page: 1
 }
 
 const clientStats = (state = clientStatState, action) => {
@@ -41,6 +43,11 @@ const clientStats = (state = clientStatState, action) => {
         case SET_STAT_DATES: {
             return assign({}, state, {
                 dates: action.payload
+            });
+        }
+        case SET_STATS_PAGE: {
+            return assign({}, state, {
+                page: action.payload
             });
         }
         default:
@@ -75,6 +82,12 @@ export const setClientStats = (stats) => {
 export const setStatDates = (dates) => {
     return {
         type: SET_STAT_DATES, payload: dates
+    };
+}
+
+export const setStatsPage = (page) => {
+    return {
+        type: SET_STATS_PAGE, payload: page
     };
 }
 

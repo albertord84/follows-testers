@@ -11,7 +11,7 @@ import {
     filter as filter$, map as map$, switchMap, delay, tap, catchError
 } from "rxjs/operators";
 
-import store, { getStatsServer } from "../store/index";
+import store, { getStatsServer, getStatsPage } from "../store/index";
 import { setStatsServer, setStatDates, setClientStats, setStatsPeriod } from "../store/clientStats";
 
 export const serverSelect$ = new Subject();
@@ -51,7 +51,7 @@ logDateSelect$.pipe(
     tap(() => NProgress.set(0.3)),
     delay(200),
     switchMap(period => {
-        const searchUrl = `${global.baseUrl}/stats/users/${getStatsServer()}/${period}`;
+        const searchUrl = `${global.baseUrl}/stats/users/${getStatsServer()}/${period}/${getStatsPage()}`;
         const promise = Axios.post(searchUrl)
         .then(response => {
             return response.data.stats;

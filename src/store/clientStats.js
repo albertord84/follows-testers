@@ -60,13 +60,15 @@ const clientStats = (state = clientStatState, action) => {
             });
         }
         case INC_STATS_PAGE: {
+            const p = Number(state.page) + 1;
             return assign({}, state, {
-                page: state.page + 1
+                page: p
             });
         }
         case DEC_STATS_PAGE: {
+            const p = Number(state.page) - 1;
             return assign({}, state, {
-                page: state.page - 1
+                page: p <= 0 ? 1 : p
             });
         }
         default:

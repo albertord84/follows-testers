@@ -1,5 +1,6 @@
 import React from 'react';
 import { map, uniqueId } from 'lodash-es';
+import StatsNav from './StatsNav';
 
 const statsList = (stats) => {
     return map(stats, stat => {
@@ -12,20 +13,11 @@ const statsList = (stats) => {
                     <small><b>Followed: {stat.followed}</b></small>
                 </div>
                 <div className="col-12 text-secondary">
-                    <small>Día: {stat.date} / {stat.time}</small>
+                    <small>Datetime: {stat.date} / {stat.time}</small>
                 </div>
             </div>
         );
     });
-}
-
-const MoreButton = (props) => {
-    if (props.total === 0 || (props.page + 50) >= props.total) {
-        return '';
-    }
-    return (
-        <span class="more-stats float-right badge badge-primary">More...</span>
-    )
 }
 
 const StatsPanel = (props) => {
@@ -33,7 +25,7 @@ const StatsPanel = (props) => {
         <div className="card mb-4 box-shadow">
             <div className="card-header">
                 <h4 className="my-0 font-weight-normal">Stats</h4>
-                <MoreButton page={props.page} total={props.total} />
+                <StatsNav />
             </div>
             <div className="card-body pl-5 pr-5">{statsList(props.stats)}</div>
         </div>

@@ -166,6 +166,6 @@ img.ref-prof-pic {
   height: 64px;
 }
 
-span.more-stats {
-  margin-top: -22px;
+div.stats-nav {
+  margin-top: -32px;
 }

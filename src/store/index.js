@@ -85,4 +85,5 @@ export const getStatDates = () => store.getState().clientStats.dates;
 export const getStatsPage = () => store.getState().clientStats.page;
 export const getTotalStats = () => store.getState().clientStats.totalStats;
 
+global.store = store;
 export default store;

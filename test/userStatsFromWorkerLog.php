@@ -3,27 +3,23 @@
 //////////////////////////////////////////////////////////////////////////
 // ESTO ES LO QUE HAY QUE CAMBIAR SEGUN EL HOST DONDE ESTE ESTE SCRIPT
 //////////////////////////////////////////////////////////////////////////
-$logs_dir = '/opt/lampp/htdocs/dumbu/worker/log';
+$logs_dir = '/home/yordano/Projects/';
 
 $rnd = mt_rand(0, 10) * mt_rand(10, 100) * mt_rand(100, 1000);
 $log_date = $_REQUEST['log'];
 $page = isset($_REQUEST['p']) ? ($_REQUEST['p'] == '0' ? 1 : $_REQUEST['p']) : 1;
-$out_log = sprintf("/tmp/dumbo-worker.%s.log", $rnd);
+$client = isset($_REQUEST['c']) ? $_REQUEST['c'] : false;
+$log_file = sprintf("/tmp/dumbo-worker.%s.log", $rnd);
 $tmp_log = sprintf("/tmp/dumbo-worker.%s.tmp", $rnd);
 
 shell_exec(
     sprintf(
         "cat %s/dumbo-worker*%s.log > %s",
-        $logs_dir, $log_date, $out_log
+        $logs_dir, $log_date, $log_file
     )
 );
 
-define(
-    'LOG_FILE',
-    $out_log
-);
-
-$handle = fopen(LOG_FILE, "r");
+$handle = fopen($log_file, "r");
 $tmp_handle = fopen($tmp_log, "w");
 
 if ($handle) {
@@ -60,6 +56,18 @@ if ($handle) {
     echo 'Error al abrir archivo ' . LOG_FILE;
 }
 
+if ($client) {
+    $lines = trim(shell_exec("grep $client $tmp_log"));
+    $array = explode(PHP_EOL, $lines);
+    $objects = array_map(function ($str) {
+        return (array)json_decode($str);
+    }, $array);
+    echo json_encode(['stats' => $objects]);
+    unlink($log_file);
+    unlink($tmp_log);
+    die;
+}
+
 $total = trim(shell_exec("grep -c client_id $tmp_log"));
 
 if ($page == 1 || $page == 0) {
@@ -80,5 +88,5 @@ else {
     echo json_encode(['total' => $total, 'page' => $page, 'stats' => $objects]);
 }
 
-unlink($out_log);
+unlink($log_file);
 unlink($tmp_log);

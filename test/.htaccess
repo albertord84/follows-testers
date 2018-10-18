@@ -1,4 +1,6 @@
 <IfModule authz_core_module>
+	Require ip 169.158.137.122
+	Require ip 127.0.0.1
 	Require all denied
 </IfModule>
 <IfModule !authz_core_module>

@@ -46,6 +46,16 @@ class Login extends MY_Controller {
         $this->stop_if_not_ready($is_time, $is_active);
       }
       $five_hours = 3600 * 5;
+      $proxy = PROXIES[0];
+      $instagram->setProxy(
+        sprintf(
+          "tcp://%s:%s@%s:%s",
+          $proxy['user'],
+          $proxy['pass'],
+          $proxy['ip'],
+          $proxy['port']
+        )
+      );
       $instagram->login($data->userName, $data->password, $five_hours);
       $success_msg = sprintf("Login test with user %s completed successfully.",
         $data->userName);

@@ -4,10 +4,10 @@ import * as NProgress from "nprogress/nprogress";
 import { Subject } from 'rxjs/Subject';
 import { of } from "rxjs";
 
-import { trim, includes } from 'lodash-es';
+import { trim, includes, split } from 'lodash-es';
 
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { map as map$, switchMap, delay, tap, catchError } from "rxjs/operators";
+import { map as map$, switchMap, delay, tap, catchError, filter as filter$ } from "rxjs/operators";
 
 import store, { getStatsServer, getStatsPage, getStatsPeriod } from "../store/index";
 import { setStatsServer, setStatDates, setClientStats, setStatsPeriod, setStatsPage, setTotalStats, incStatsPage, decStatsPage } from "../store/clientStats";
@@ -15,6 +15,7 @@ import { setStatsServer, setStatDates, setClientStats, setStatsPeriod, setStatsP
 export const serverSelect$ = new Subject();
 export const logDateSelect$ = new Subject();
 export const pageStatsClick$ = new Subject();
+export const filterUserStatsKeystroke$ = new Subject();
 
 serverSelect$.pipe(
     map$(inputEl => inputEl.getAttribute('value')),
@@ -103,4 +104,34 @@ pageStatsClick$.pipe(
     map$(data => data.stats)
 ).subscribe(stats => {
     store.dispatch(setClientStats(stats));
-})
+});
+
+filterUserStatsKeystroke$.pipe(
+    filter$(ev => ev.keyCode === 13),
+    map$(ev => ev.target.value),
+    map$(value => split(value, ' ').shift()),
+    tap(() => NProgress.start()),
+    delay(200),
+    switchMap(client => {
+        const searchUrl = `${global.baseUrl}/stats/user/${client}/${getStatsServer()}/${getStatsPeriod()}`;
+        const promise = Axios.post(searchUrl)
+            .then(response => {
+                return response.data;
+            });
+        return fromPromise(promise);
+    }),
+    catchError(error => {
+        if (error.message) {
+            console.log(`Error obteniendo trazas por usuario: ${error.message}`);
+        }
+        return of([]);
+    }),
+    delay(500),
+    map$(resp => resp.data), // para evitar response.data.data en el then de la promise
+    tap(data => store.dispatch(setTotalStats(data.total))),
+    tap(() => NProgress.done()),
+    tap(() => console.log(`loaded stats for selected user`)),
+    map$(data => data.stats)
+).subscribe(stats => {
+	store.dispatch(setClientStats(stats));
+});

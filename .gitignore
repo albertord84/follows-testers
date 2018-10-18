@@ -46,3 +46,4 @@ vendor/
 /tests/tests/
 /tests/results/
 
+application/config/constants.php

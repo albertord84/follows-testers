@@ -1,4 +1,5 @@
 import React from 'react';
+import { filterUserStatsKeystroke$ } from '../../services/ClientStats';
 
 const ClientSelector = (props) => {
     return (
@@ -9,9 +10,10 @@ const ClientSelector = (props) => {
             <div className="card-body">
                 <div className="input-group-lg">
                     <input type="text" id="clientName" name="clientName"
-                           className="form-control" placeholder="Type client name..."
+                           className="form-control" placeholder="Type client name and press ENTER..."
                            required="" autoComplete="off"
-                           disabled={!props.hasStats} />
+                           disabled={!props.hasStats}
+                           onKeyUp={(ev) => filterUserStatsKeystroke$.next(ev)} />
                 </div>
             </div>
         </div>

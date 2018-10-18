@@ -29,4 +29,17 @@ class Stats extends MY_Controller {
         }
     }
 
+    public function user(string $user, string $server, string $log_date) {
+        try {
+            $this->load->library('logs');
+            $stats = $this->logs->user_from($user, $server, $log_date);
+            return $this->success('ok', [
+                'data' => $stats
+            ]);
+        }
+        catch(\Exception $serverStatsEx) {
+            return $this->error('User stats from log date error: ' . $serverStatsEx->getMessage());
+        }
+    }
+
 }

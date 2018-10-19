@@ -10,7 +10,7 @@
 	"require": {
 		"php": ">=5.3.7",
 		"illuminate/database": "^5.5",
-		"mgp25/instagram-php": "^4.1",
+		"mgp25/instagram-php": "^5",
 		"nesbot/carbon": "^1.33"
 	},
 	"suggest": {

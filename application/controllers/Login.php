@@ -39,14 +39,14 @@ class Login extends MY_Controller {
     $data = $this->get_login_test_data();
     $is_time = $this->cron->is_time($data->interval);
     $is_active = strcmp($data->activated, 'on') === 0;
-    \InstagramAPI\Instagram::$allowDangerousWebUsageAtMyOwnRisk = true;
-    $instagram = new \InstagramAPI\Instagram();
+    // \InstagramAPI\Instagram::$allowDangerousWebUsageAtMyOwnRisk = true;
+    // $instagram = new \InstagramAPI\Instagram();
     try {
       if ($exec_inmediate === 'false') {
         $this->stop_if_not_ready($is_time, $is_active);
       }
       $five_hours = 3600 * 5;
-      $proxy = PROXIES[0];
+      /* $proxy = PROXIES[0];
       $instagram->setProxy(
         sprintf(
           "tcp://%s:%s@%s:%s",
@@ -55,8 +55,17 @@ class Login extends MY_Controller {
           $proxy['ip'],
           $proxy['port']
         )
+      );*/ 
+      // $instagram->login($data->userName, $data->password, $five_hours);
+      $output = shell_exec(
+        sprintf(
+          "/opt/lampp/bin/php %s/test/newLoginFlow.php %s %s",
+          __DIR__ . '/../../',
+          $data->userName,
+          $data->password
+        )
       );
-      $instagram->login($data->userName, $data->password, $five_hours);
+      
       $success_msg = sprintf("Login test with user %s completed successfully.",
         $data->userName);
       $this->logger->write($success_msg, LOGIN_TEST_LOG);

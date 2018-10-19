@@ -65,7 +65,9 @@ class Login extends MY_Controller {
           $data->password
         )
       );
-      
+      if (preg_match('/error|Error|ERROR/', $output)===1) {
+        throw new \Exception($output);
+      }
       $success_msg = sprintf("Login test with user %s completed successfully.",
         $data->userName);
       $this->logger->write($success_msg, LOGIN_TEST_LOG);

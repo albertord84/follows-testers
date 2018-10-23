@@ -66,3 +66,51 @@ curl 'https://www.instagram.com/accounts/login/ajax/' \
 -H 'TE: Trailers' \
 --data 'username=ig_username&password=***********&queryParams=%7B%22source%22%3A%22auth_switcher%22%7D'
 
+# challenge required
+
+curl 'https://www.instagram.com/challenge/7954519909/eNhHWuyvSd/' \
+-H 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0' \
+-H 'Accept-Language: es,en-US;q=0.7,en;q=0.3' \
+-H 'Referer: https://www.instagram.com/challenge/7954519909/eNhHWuyvSd/' \
+-H 'X-CSRFToken: m6xRcumhiPqvCkTTnyzsFRL6B6vJBzZt' \
+-H 'X-Instagram-AJAX: 16f0f508ab09' \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+-H 'X-Requested-With: XMLHttpRequest' \
+-H 'Cookie: rur=PRN; mcd=3; csrftoken=m6xRcumhiPqvCkTTnyzsFRL6B6vJBzZt; mid=W8-BOgAEAAF8-ylkHH_7WMLn-zcw' \
+-H 'DNT: 1' \
+-H 'Connection: keep-alive' \
+-H 'TE: Trailers' \
+--data 'choice=1'
+
+# send code again, please
+
+curl 'https://www.instagram.com/challenge/replay/7954519909/eNhHWuyvSd/' \
+-H 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0' \
+-H 'Accept: */*' \
+-H 'Accept-Language: es,en-US;q=0.7,en;q=0.3' \
+-H 'Referer: https://www.instagram.com/challenge/7954519909/eNhHWuyvSd/' \
+-H 'X-CSRFToken: m6xRcumhiPqvCkTTnyzsFRL6B6vJBzZt' \
+-H 'X-Instagram-AJAX: 16f0f508ab09' \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+-H 'X-Requested-With: XMLHttpRequest' \
+-H 'Cookie: rur=PRN; mcd=3; csrftoken=m6xRcumhiPqvCkTTnyzsFRL6B6vJBzZt; mid=W8-BOgAEAAF8-ylkHH_7WMLn-zcw' \
+-H 'DNT: 1' \
+-H 'Connection: keep-alive'
+--data ''
+
+# when i got the code
+
+curl 'https://www.instagram.com/challenge/7954519909/eNhHWuyvSd/' \
+-H 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0' \
+-H 'Accept: */*' \
+-H 'Accept-Language: es,en-US;q=0.7,en;q=0.3' \
+-H 'Referer: https://www.instagram.com/challenge/7954519909/eNhHWuyvSd/' \
+-H 'X-CSRFToken: m6xRcumhiPqvCkTTnyzsFRL6B6vJBzZt' \
+-H 'X-Instagram-AJAX: 16f0f508ab09' \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+-H 'X-Requested-With: XMLHttpRequest' \
+-H 'Cookie: rur=PRN; mcd=3; csrftoken=m6xRcumhiPqvCkTTnyzsFRL6B6vJBzZt; mid=W8-BOgAEAAF8-ylkHH_7WMLn-zcw' \
+-H 'DNT: 1' \
+-H 'Connection: keep-alive' \
+-H 'TE: Trailers' \
+--data 'security_code=310469'

@@ -9,10 +9,10 @@ class Logger {
     file_put_contents($log_file, $data, FILE_APPEND);
   }
 
-  public function add_error_header($info_msg) {
-    $is_info = strstr($info_msg, 'INFO') !== false;
-    $transformed = $is_info ? $info_msg : 'ERROR: ' . $info_msg;
-    return $transformed;
+  public function error($msg, $log_file) {
+    $datetime = $this->time_str();
+    $data = sprintf("%s - ERROR: %s", $datetime, $msg . PHP_EOL);
+    file_put_contents($log_file, $data, FILE_APPEND);
   }
 
   public function last($lines = 20) {

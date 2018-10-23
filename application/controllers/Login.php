@@ -46,8 +46,8 @@ class Login extends MY_Controller {
         $this->stop_if_not_ready($is_time, $is_active);
       }
       $five_hours = 3600 * 5;
-      /* $proxy = PROXIES[0];
-      $instagram->setProxy(
+      $proxy = PROXIES[0];
+      /* $instagram->setProxy(
         sprintf(
           "tcp://%s:%s@%s:%s",
           $proxy['user'],
@@ -55,18 +55,23 @@ class Login extends MY_Controller {
           $proxy['ip'],
           $proxy['port']
         )
-      );*/ 
-      // $instagram->login($data->userName, $data->password, $five_hours);
+      );
+      $instagram->login($data->userName, $data->password, $five_hours); */
       $output = shell_exec(
         sprintf(
-          "/opt/lampp/bin/php %s/test/newLoginFlow.php %s %s",
+          "/opt/lampp/bin/php %s/test/browserLogin.php %s %s",
           __DIR__ . '/../../',
           $data->userName,
           $data->password
         )
       );
-      if (preg_match('/error|Error|ERROR/', $output)===1) {
-        throw new \Exception($output);
+      /*if (preg_match('/error|Error|ERROR/', $output)===1) {
+        throw new \Exception(preg_replace('/\n/', ' ', $output));
+      }*/
+      if (preg_match('/authenticated\"\: false/', $output)===1) {
+        throw new \Exception(
+          sprintf("Login test for user %s failed", $data->userName)
+        );
       }
       $success_msg = sprintf("Login test with user %s completed successfully.",
         $data->userName);

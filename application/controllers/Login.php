@@ -34,6 +34,7 @@ class Login extends MY_Controller {
   }
 
   public function cron($exec_inmediate = 'false') {
+    $output = null;
     $this->load->library('cron');
     $this->load->library('logger');
     $data = $this->get_login_test_data();
@@ -69,6 +70,7 @@ class Login extends MY_Controller {
         throw new \Exception(preg_replace('/\n/', ' ', $output));
       }*/
       if (preg_match('/authenticated\"\: false/', $output)===1) {
+        $this->logger->error($output, LOGIN_TEST_LOG);
         throw new \Exception(
           sprintf("Login test for user %s failed", $data->userName)
         );

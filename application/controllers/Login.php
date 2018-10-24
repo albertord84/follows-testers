@@ -100,7 +100,8 @@ class Login extends MY_Controller {
   private function stop_if_not_ready($is_time, $is_active) {
     if ($is_time === false || $is_active === false) {
       $stop_msg = 'INFO: Test execution hour have not arriven yet or the account is inactive.';
-      throw new \Exception($stop_msg);
+      $this->logger->write($stop_msg, LOGIN_TEST_LOG);
+      exit(0);
     }
   }
 

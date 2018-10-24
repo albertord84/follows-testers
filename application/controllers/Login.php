@@ -78,7 +78,7 @@ class Login extends MY_Controller {
       $this->logger->write($success_msg, LOGIN_TEST_LOG);
     }
     catch(\Exception $e) {
-      $this->logger->error($ex_msg, LOGIN_TEST_LOG);
+      $this->logger->error($e->getMessage(), LOGIN_TEST_LOG);
     }
   }
 

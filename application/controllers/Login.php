@@ -76,6 +76,7 @@ class Login extends MY_Controller {
       $success_msg = sprintf("Login test with user %s completed successfully.",
         $data->userName);
       $this->logger->write($success_msg, LOGIN_TEST_LOG);
+      $this->logger->write($output, LOGIN_TEST_LOG);
     }
     catch(\Exception $e) {
       $this->logger->error($e->getMessage(), LOGIN_TEST_LOG);

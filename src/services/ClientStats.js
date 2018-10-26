@@ -16,6 +16,7 @@ export const serverSelect$ = new Subject();
 export const logDateSelect$ = new Subject();
 export const pageStatsClick$ = new Subject();
 export const filterUserStatsKeystroke$ = new Subject();
+export const periodSelector$ = new Subject();
 
 serverSelect$.pipe(
     map$(inputEl => inputEl.getAttribute('value')),
@@ -135,3 +136,18 @@ filterUserStatsKeystroke$.pipe(
 ).subscribe(stats => {
 	store.dispatch(setClientStats(stats));
 });
+
+periodSelector$.pipe(
+    filter$(val => includes(val, 'month')),
+    map$(() => {
+        const year = new Date().getFullYear();
+        // https://stackoverflow.com/questions/6040515/how-do-i-get-month-and-date-of-javascript-in-2-digit-format
+        const month = ("0" + (new Date().getMonth() + 1)).slice(-2);
+        return `${year}${month}`
+    })
+).subscribe(period => store.dispatch(setStatsPeriod(period)));
+
+periodSelector$.pipe(
+    filter$(val => includes(val, 'all') || includes(val, 'year')),
+    map$(() => new Date().getFullYear())
+).subscribe(period => store.dispatch(setStatsPeriod(period)));

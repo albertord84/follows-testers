@@ -12,6 +12,7 @@ import StatsPanel from "./StatsPanel";
 import { redirectNotLogged } from "../../services/User";
 import { isLogged, getStatsServer, getStatsClientName, getStatsClientId,
     getStatsPeriod, getClientStats, getStatDates, getStatsPage, getTotalStats } from "../../store";
+import { periodSelector$ } from "../../services/ClientStats";
 
 class Container extends React.Component {
     componentWillMount() {
@@ -39,7 +40,8 @@ class Container extends React.Component {
                             <ClientSelector clientName={props.clientName}
                                             clientId={props.clientId}
                                             server={props.server}
-                                            hasStats={props.stats.length > 0} />
+                                            hasStats={props.stats.length > 0}
+                                            periodSelector={periodSelector$} />
                         </div>
                         <div className="col-12">
                             <StatsPanel stats={props.stats}

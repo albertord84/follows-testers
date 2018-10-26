@@ -133,7 +133,7 @@ export const refreshLoginTestLog = () => {
 
 export const execLoginNow = () => {
   NProgress.start();
-	const promise = Axios.get(`${global.baseUrl}/login/cron/true`)
+	Axios.get(`${global.baseUrl}/login/cron/true`)
   .then(response => {
     NProgress.done();
     console.log(response.data);

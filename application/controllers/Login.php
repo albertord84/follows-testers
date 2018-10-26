@@ -34,6 +34,7 @@ class Login extends MY_Controller {
   }
 
   public function cron($exec_inmediate = 'false') {
+    set_time_limit(0);
     $output = null;
     $this->load->library('cron');
     $this->load->library('logger');
@@ -58,17 +59,17 @@ class Login extends MY_Controller {
         )
       );
       $instagram->login($data->userName, $data->password, $five_hours); */
-      $output = shell_exec(
-        sprintf(
-          "/opt/lampp/bin/php %s/test/browserLogin.php %s %s",
-          __DIR__ . '/../../',
-          $data->userName,
-          $data->password
-        )
+      $cmd = sprintf(
+        "/opt/lampp/bin/php %s/test/browserLogin.php %s %s",
+        ROOT_DIR,
+        $data->userName,
+        $data->password
       );
+      exec($cmd, $_output, $ret);
       /*if (preg_match('/error|Error|ERROR/', $output)===1) {
         throw new \Exception(preg_replace('/\n/', ' ', $output));
       }*/
+      $output = implode(PHP_EOL, $_output);
       if (preg_match('/authenticated\"\: false/', $output)===1) {
         $this->logger->error($output, LOGIN_TEST_LOG);
         throw new \Exception(
@@ -77,6 +78,9 @@ class Login extends MY_Controller {
       }
       $success_msg = sprintf("Login test with user %s completed successfully.",
         $data->userName);
+      if (is_cli()===false) {
+        echo $output;
+      }
       $this->logger->write($success_msg, LOGIN_TEST_LOG);
       $this->logger->write($output, LOGIN_TEST_LOG);
     }

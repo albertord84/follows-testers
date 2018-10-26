@@ -130,3 +130,18 @@ export const refreshLoginTestLog = () => {
   store.dispatch(loginTestLogAction());
   lastLoginTestLog();
 }
+
+export const execLoginNow = () => {
+  NProgress.start();
+	const promise = Axios.get(`${global.baseUrl}/login/cron/true`)
+  .then(response => {
+    NProgress.done();
+    console.log(response.data);
+  })
+  .catch(error => {
+    setTimeout(function () {
+      console.error(error.response.statusText);
+      NProgress.done();
+    }, 1000);
+  });
+}

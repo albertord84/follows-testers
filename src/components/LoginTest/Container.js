@@ -8,7 +8,8 @@ import Footer from "../Footer";
 
 import {
   loadLoginTestState, lastLoginTestLog, saveLoginTestData$,
-  refreshLoginTestLog
+  refreshLoginTestLog,
+  execLoginNow
 } from "../../services/LoginTester";
 import { redirectNotLogged } from "../../services/User";
 
@@ -45,7 +46,8 @@ class Container extends React.Component {
                                 password={props.password} />
                     </div>
                     <div className="col-5">
-                      <IntervalBox interval={props.interval} />
+                      <IntervalBox interval={props.interval}
+                                   execImmediatedly={execLoginNow} / >
                     </div>
                     <div className="col-10">
                       <LogBox logLines={props.logLines} refreshHandler={refreshLoginTestLog} />

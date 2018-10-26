@@ -74,7 +74,8 @@ body {
 
 .box-shadow { box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05); }
 
-.card.login-test-log .card-header .refresh-log {
+.card.login-test-log .card-header .refresh-log,
+.card.exec-interval .card-header .exec-immediatedly {
   position: absolute;
   right: 10px;
   top: 10px;

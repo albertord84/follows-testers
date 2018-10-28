@@ -6,6 +6,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class User extends MY_Controller {
 
 	public function signin() {
+    $this->load->library('logger');
 		$username = $this->request_param('userName');
     $password = $this->request_param('password');
     try {
@@ -13,6 +14,7 @@ class User extends MY_Controller {
       if ($is_valid) {
         // guardar otras cosas de la sesion aqui...
         $this->session->token = $this->guid();
+        $this->logger->write("The user $username logged in successfully", SYS_LOG);
         return $this->success('ok', [
           'token' => $this->session->token
         ]);

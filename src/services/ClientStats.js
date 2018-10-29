@@ -4,7 +4,7 @@ import * as NProgress from "nprogress/nprogress";
 import { Subject } from 'rxjs/Subject';
 import { of } from "rxjs";
 
-import { trim, includes, split } from 'lodash-es';
+import { trim, includes, split, orderBy } from 'lodash-es';
 
 import { fromPromise } from 'rxjs/observable/fromPromise';
 import { map as map$, switchMap, delay, tap, catchError, filter as filter$ } from "rxjs/operators";
@@ -132,7 +132,8 @@ filterUserStatsKeystroke$.pipe(
     tap(data => store.dispatch(setTotalStats(data.total))),
     tap(() => NProgress.done()),
     tap(() => console.log(`loaded stats for selected user`)),
-    map$(data => data.stats)
+    map$(data => data.stats),
+    map$(data => orderBy(data, ['date', 'time'], ['asc', 'asc']))
 ).subscribe(stats => {
 	store.dispatch(setClientStats(stats));
 });

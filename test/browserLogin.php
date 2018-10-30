@@ -37,7 +37,7 @@ function cookies_filename(string $rnd) {
 function get_cookie(string $cookie_name, array $cookies) {
     $reducer = function ($cookie, $current_cookie) use ($cookie_name) {
         $cookie_object = (object)$current_cookie;
-        return $cookie_object->Name === 'csrftoken' ? $cookie_object->Value : $cookie;
+        return $cookie_object->Name === $cookie_name ? $cookie_object->Value : $cookie;
     };
     return array_reduce($cookies, $reducer, null);
 }

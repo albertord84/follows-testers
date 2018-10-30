@@ -114,3 +114,22 @@ curl 'https://www.instagram.com/challenge/7954519909/eNhHWuyvSd/' \
 -H 'Connection: keep-alive' \
 -H 'TE: Trailers' \
 --data 'security_code=310469'
+
+# primera pagina de a quien sigo (following)
+
+curl 'https://www.instagram.com/graphql/query/?query_hash=c56ee0ae1f89cdbd1c89e2bc6b8f3d18&variables=%7B%22id%22%3A%223670825632%22%2C%22include_reel%22%3Atrue%2C%22fetch_mutual%22%3Afalse%2C%22first%22%3A24%7D' \
+-H 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:63.0) Gecko/20100101 Firefox/63.0' \
+-H 'Accept-Language: en-US,en;q=0.5' \
+-H 'Referer: https://www.instagram.com/yordanoweb/following/' \
+-H 'X-Instagram-GIS: f66119f2f93d92cdf93c2ea932a307de' \
+-H 'X-Requested-With: XMLHttpRequest' \
+-H 'Cookie: mid=W9HmNAAEAAGSvaYIC6XOkhcxhqo_; mcd=3; csrftoken=jeIxw1bvSOgeujnjBMYh33o1HvXp0Fx3; shbid=12443; ds_user_id=3670825632; sessionid=IGSC6828514fa1a82ef10035141cdadfe7973941d2fb2109f2c9a99906ceb27ed08b%3ANW4MpRpMGqPleuaoaogNOe3xXk4iOVLY%3A%7B%22_auth_user_id%22%3A3670825632%2C%22_auth_user_backend%22%3A%22accounts.backends.CaseInsensitiveModelBackend%22%2C%22_auth_user_hash%22%3A%22%22%2C%22_platform%22%3A4%2C%22_token_ver%22%3A2%2C%22_token%22%3A%223670825632%3AJYeiaMI9qgsul8StHwa4j9GWrunhlAJB%3Ad13fa0181709a9b7fb5e6d7370d3e721cba3d5dc9762690b496265db936b0f15%22%2C%22last_refreshed%22%3A1540841672.7964630127%7D; rur=FTW; urlgen="{\"169.158.137.115\": 10569}:1gHDKD:7tCi8_j0QKhPeKhSCOUQz5rFuMA"'
+
+curl 'https://www.instagram.com/graphql/query/?query_hash=c56ee0ae1f89cdbd1c89e2bc6b8f3d18&variables=%7B%22id%22%3A%223670825632%22%2C%22include_reel%22%3Atrue%2C%22fetch_mutual%22%3Afalse%2C%22first%22%3A12%2C%22after%22%3A%22QVFEbkFwOGFPMW5vajJGaTYzQ0NadFRrSE5LY3RORUw3eExWUDJmYVlBR2RnQ0hUVk9wb3dPUnlPNklEX2pHd0NXa1RLaVBNYUpHZkV0ek8xd1NRZTFydg%3D%3D%22%7D' \
+-H 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:63.0) Gecko/20100101 Firefox/63.0' \
+-H 'Accept-Language: en-US,en;q=0.5' \
+-H 'Referer: https://www.instagram.com/yordanoweb/following/' \
+-H 'X-Instagram-GIS: 9e2e66cd338f3054cbd0e7f40f4fa4e4' \
+-H 'X-Requested-With: XMLHttpRequest' \
+-H 'Connection: keep-alive' \
+-H 'Cookie: mid=W9HmNAAEAAGSvaYIC6XOkhcxhqo_; mcd=3; csrftoken=jeIxw1bvSOgeujnjBMYh33o1HvXp0Fx3; shbid=12443; ds_user_id=3670825632; sessionid=IGSC6828514fa1a82ef10035141cdadfe7973941d2fb2109f2c9a99906ceb27ed08b%3ANW4MpRpMGqPleuaoaogNOe3xXk4iOVLY%3A%7B%22_auth_user_id%22%3A3670825632%2C%22_auth_user_backend%22%3A%22accounts.backends.CaseInsensitiveModelBackend%22%2C%22_auth_user_hash%22%3A%22%22%2C%22_platform%22%3A4%2C%22_token_ver%22%3A2%2C%22_token%22%3A%223670825632%3AJYeiaMI9qgsul8StHwa4j9GWrunhlAJB%3Ad13fa0181709a9b7fb5e6d7370d3e721cba3d5dc9762690b496265db936b0f15%22%2C%22last_refreshed%22%3A1540841672.7964630127%7D; rur=FTW; urlgen="{\"169.158.137.115\": 10569}:1gHDVc:8AyWtxMeSo6C6_kpuebG-X8gBoQ"'

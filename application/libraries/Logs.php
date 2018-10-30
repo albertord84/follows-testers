@@ -21,7 +21,15 @@ class Logs {
             "https://%s/%s",
             $host, $statServersConfig->logsScript
         );
-        $remote_content = file_get_contents($url);
+        $remote_content = file_get_contents(
+            $url, false,
+            stream_context_create([
+                "ssl"=>array(
+                    "verify_peer"=>false,
+                    "verify_peer_name"=>false,
+                ),
+            ])
+        );
         $log_dates_array = (array) json_decode($remote_content);
         return $log_dates_array;
     }
@@ -37,7 +45,15 @@ class Logs {
             "https://%s/%s?log=%s&p=%s",
             $host, $statServersConfig->usersScript, $log_date, $page
         );
-        $remote_content = file_get_contents($url);
+        $remote_content = file_get_contents(
+            $url, false,
+            stream_context_create([
+                "ssl"=>array(
+                    "verify_peer"=>false,
+                    "verify_peer_name"=>false,
+                ),
+            ])
+        );
         $log_users_array = (array) json_decode($remote_content);
         return $log_users_array;
     }

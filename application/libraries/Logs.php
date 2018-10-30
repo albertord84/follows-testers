@@ -69,7 +69,15 @@ class Logs {
             "https://%s/%s?log=%s&c=%s",
             $host, $statServersConfig->usersScript, $log_date, $user
         );
-        $remote_content = file_get_contents($url);
+        $remote_content = file_get_contents(
+            $url, false,
+            stream_context_create([
+                "ssl"=>array(
+                    "verify_peer"=>false,
+                    "verify_peer_name"=>false,
+                ),
+            ])
+        );
         $log_users_array = (array) json_decode($remote_content);
         return $log_users_array;
     }
